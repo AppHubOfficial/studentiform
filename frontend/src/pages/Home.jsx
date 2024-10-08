@@ -1,8 +1,16 @@
 import React from 'react';
 import '../assets/styles/Home.css';
 
+import Form from '../component/Form'
+
 function Home() {
-  return <h1 className='title'>Welcome to the Home Page</h1>;
+  return (
+    <div>
+      <Form></Form>
+    </div> 
+  );
+    
+  
 }
 
 export default Home;
