@@ -1,6 +1,7 @@
-import logo from './logo.svg';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.css';
+import Page404 from './pages/Page404'
+import Home from './pages/Home'
 
 const router = createBrowserRouter([
   {
@@ -10,14 +11,6 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />, 
-      },
-      {
-        path: "/contact",
-        element: <Contact />,
-      },
-      {
-        path: "/chatroom",
-        element: <ChatRoom />,
       },
     ],
   },
