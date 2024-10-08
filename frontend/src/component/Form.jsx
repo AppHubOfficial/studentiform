@@ -30,6 +30,7 @@ function MyForm() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        // Mettere dati nel db
         console.log(formData);
     };
 
