@@ -1,26 +1,23 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Homepage from './component/Homepage.jsx';
-import FormExStudenti from './component/Form-exstudenti.jsx';
-import FormInsegnanti from './component/Form-Insegnanti.jsx';
-import FormLogin from './component/Login.jsx';
+import Home from './pages/Home.jsx';
+
+import LoginPage from './pages/LoginPage.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Homepage />,
+    element: <Home />,
   },
   {
-    path: "/form-insegnanti",
-    element: <FormInsegnanti />,
-  },
-  {
-    path: "/form-exstudenti",
-    element: <FormExStudenti />,
+    path: "/dashboard",
+    element: <Dashboard />,
   },
   {
     path: "/login",
-    element: <FormLogin />,
+    element: <LoginPage />,
   },
 ]);
 

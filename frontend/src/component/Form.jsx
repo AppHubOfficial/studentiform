@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box } from '@mui/material';
 
-function FormExStudenti() {
+///////////////////////////COMPONENTE ATTUALMENTE NON USATO///////////////////////////
 
+function Form() {
 
 
     const formFields = [
@@ -39,22 +40,19 @@ function FormExStudenti() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData), // Invia i dati del modulo come JSON
+                body: JSON.stringify(formData),
             });
 
             const data = await response.json();
 
             if (response.ok) {
                 console.log('Utente creato:', data);
-                // Puoi resettare il modulo o mostrare un messaggio di successo
-                setFormData(initialFormData); // Resetta il modulo
+                setFormData(initialFormData);
             } else {
                 console.error('Errore nella creazione dell\'utente:', data.error);
-                // Puoi mostrare un messaggio di errore all'utente
             }
         } catch (error) {
             console.error('Errore di rete:', error);
-            // Gestisci l'errore di rete (es. mostra un messaggio all'utente)
         }
 
         console.log(formData);
@@ -75,6 +73,7 @@ function FormExStudenti() {
                 margin: 'auto',
                 position: 'relative',
                 top: '100px',
+                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
             }}
         >
             {formFields.map((field) => (
@@ -96,4 +95,4 @@ function FormExStudenti() {
     );
 }
 
-export default FormExStudenti;
+export default Form;
