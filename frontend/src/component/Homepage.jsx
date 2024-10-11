@@ -31,7 +31,7 @@ function Homepage() {
       }}
     >
       <Typography variant="h4" component="h1" gutterBottom>
-        Benvenuto su Studentiform
+        Benvenuto!
       </Typography>
       
       <Box sx={{ display: 'flex', gap: 2 }}>

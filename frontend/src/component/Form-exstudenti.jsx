@@ -34,7 +34,7 @@ function FormExStudenti() {
         e.preventDefault();
 
         try {
-            const response = await fetch('/api/users/create', {
+            const response = await fetch('/api/users/create-user', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
