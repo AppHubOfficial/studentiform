@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box } from '@mui/material';
 
-function FormExStudenti() {
+function FormLogin() {
 
 
 
     const formFields = [
-        { label: 'Nome', name: 'Nome', type: 'text', required: true },
-        { label: 'Cognome', name: 'Cognome', type: 'text', required: true },
         { label: 'Email', name: 'email', type: 'email', required: true },
-        { label: 'Password', name: 'password', type: 'password', required: true },
-        { label: 'Numero di Telefono', name: 'NumeroDiTelefono', type: 'tel', required: true },
-        { label: 'Università', name: 'università', type: 'text', required: false },
-        { label: 'Facoltà', name: 'Facoltà', type: 'text', required: false }
-    
+        { label: 'Password', name: 'password', type: 'password', required: true }
     ];
 
     const initialFormData = formFields.reduce((acc, field) => {
@@ -30,32 +24,9 @@ function FormExStudenti() {
         });
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-
-        try {
-            const response = await fetch('/api/users/create-user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData), // Invia i dati del modulo come JSON
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                console.log('Utente creato:', data);
-                // Puoi resettare il modulo o mostrare un messaggio di successo
-                setFormData(initialFormData); // Resetta il modulo
-            } else {
-                console.error('Errore nella creazione dell\'utente:', data.error);
-                // Puoi mostrare un messaggio di errore all'utente
-            }
-        } catch (error) {
-            console.error('Errore di rete:', error);
-            // Gestisci l'errore di rete (es. mostra un messaggio all'utente)
-        }
+        // Mettere dati nel db
 
         console.log(formData);
     };
@@ -96,4 +67,4 @@ function FormExStudenti() {
     );
 }
 
-export default FormExStudenti;
+export default FormLogin;

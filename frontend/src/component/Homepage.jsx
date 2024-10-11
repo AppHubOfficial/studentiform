@@ -6,15 +6,15 @@ function Homepage() {
   const navigate = useNavigate();
 
   const handleStudentClick = () => {
-    navigate('/form-exstudenti'); // Vai alla pagina di registrazione studenti
+    navigate('/form-exstudenti');
   };
 
   const handleTeacherClick = () => {
-    navigate('/register-teacher'); // Vai alla pagina di registrazione insegnanti
+    navigate('/form-insegnanti'); 
   };
 
   const handleLoginClick = () => {
-    navigate('/login'); // Vai alla pagina di login
+    navigate('/login');
   };
 
   return (

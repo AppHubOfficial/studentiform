@@ -1,7 +1,9 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import MyForm from './component/Form-exstudenti.jsx';
 import Homepage from './component/Homepage.jsx';
+import FormExStudenti from './component/Form-exstudenti.jsx';
+import FormInsegnanti from './component/Form-Insegnanti.jsx';
+import FormLogin from './component/Login.jsx';
 
 const router = createBrowserRouter([
   {
@@ -9,8 +11,16 @@ const router = createBrowserRouter([
     element: <Homepage />,
   },
   {
+    path: "/form-insegnanti",
+    element: <FormInsegnanti />,
+  },
+  {
     path: "/form-exstudenti",
-    element: <MyForm />,
+    element: <FormExStudenti />,
+  },
+  {
+    path: "/login",
+    element: <FormLogin />,
   },
 ]);
 
