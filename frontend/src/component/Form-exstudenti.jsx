@@ -6,12 +6,13 @@ function MyForm() {
 
 
     const formFields = [
-        { label: 'Nome', name: 'firstName', type: 'text', required: true },
-        { label: 'Cognome', name: 'lastName', type: 'text', required: true },
+        { label: 'Nome', name: 'Nome', type: 'text', required: true },
+        { label: 'Cognome', name: 'Cognome', type: 'text', required: true },
         { label: 'Email', name: 'email', type: 'email', required: true },
-        { label: 'Numero di Telefono', name: 'phoneNumber', type: 'tel', required: true },
-        { label: 'Città', name: 'city', type: 'text', required: true },
-        { label: 'Scuola', name: 'school', type: 'text', required: false },
+        { label: 'Numero di Telefono', name: 'NumeroDiTelefono', type: 'tel', required: true },
+        { label: 'Università', name: 'università', type: 'text', required: false },
+        { label: 'Facoltà', name: 'Facoltà', type: 'text', required: false },
+    
     ];
 
     const initialFormData = formFields.reduce((acc, field) => {

@@ -1,18 +1,16 @@
+import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import './App.css';
-import Page404 from './pages/Page404'
-import Home from './pages/Home'
+import MyForm from './component/Form-exstudenti.jsx';
+import Homepage from './component/Homepage.jsx';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    errorElement: <Page404 />,
-    children: [
-      {
-        path: "/",
-        element: <Home />,
-      },
-    ],
+    element: <Homepage />,
+  },
+  {
+    path: "/form-exstudenti",
+    element: <MyForm />,
   },
 ]);
 
