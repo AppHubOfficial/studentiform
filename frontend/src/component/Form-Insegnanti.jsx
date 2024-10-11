@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box } from '@mui/material';
 
-function FormExStudenti() {
+function FormInsegnanti() {
 
 
 
     const formFields = [
-        { label: 'Nome', name: 'Nome', type: 'text', required: true },
-        { label: 'Cognome', name: 'Cognome', type: 'text', required: true },
+        { label: 'Nome e Cognome', name: 'NomeCognome', type: 'text', required: true },
         { label: 'Email', name: 'email', type: 'email', required: true },
-        { label: 'Password', name: 'password', type: 'password', required: true },
-        { label: 'Numero di Telefono', name: 'NumeroDiTelefono', type: 'tel', required: true },
-        { label: 'Università', name: 'università', type: 'text', required: false },
-        { label: 'Facoltà', name: 'Facoltà', type: 'text', required: false }
-    
+        { label: 'Password', name: 'password', type: 'password', required: true }
     ];
 
     const initialFormData = formFields.reduce((acc, field) => {
@@ -73,4 +68,4 @@ function FormExStudenti() {
     );
 }
 
-export default FormExStudenti;
+export default FormInsegnanti;
