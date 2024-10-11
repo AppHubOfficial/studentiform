@@ -12,7 +12,7 @@ function FormExStudenti() {
         { label: 'Password', name: 'password', type: 'password', required: true },
         { label: 'Numero di Telefono', name: 'NumeroDiTelefono', type: 'tel', required: true },
         { label: 'Università', name: 'università', type: 'text', required: false },
-        { label: 'Facoltà', name: 'Facoltà', type: 'text', required: false },
+        { label: 'Facoltà', name: 'Facoltà', type: 'text', required: false }
     
     ];
 
