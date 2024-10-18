@@ -23,7 +23,7 @@ function LoginPage() {
         { label: 'Facoltà', name: 'Facoltà', type: 'text', required: false, roles: ['student'] }
     ];
 
-    const filteredFields = formFields.filter(field => field.roles.includes(type));
+    const filteredFields = formFields.filter(field => field.roles.includes(type)); // Per mostrare solo i campi relativi a studente o insegnante
 
     const initialFormData = filteredFields.reduce((acc, field) => {
         acc[field.name] = '';
@@ -42,7 +42,13 @@ function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const dataToSend = { ...formData, type };
+        const dataToSend = filteredFields.reduce((acc, field) => {
+            acc[field.name] = {
+                value: formData[field.name],
+                required: field.required
+            };
+            return acc;
+        }, { type });
 
         try {
             const response = await fetch('http://localhost:5000/api/users/create-user', {

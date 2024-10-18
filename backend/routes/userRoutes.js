@@ -4,12 +4,23 @@ const bcrypt = require('bcrypt');
 const supabase = require('../utils/supabaseClient');
 
 router.post('/create-user', async (req, res) => {
-  const { nome, email, password, type, tel } = req.body;
 
-  if (!nome || !email || !password || !type || !tel) {
-    console.log('Ricevuti campi:', { nome, email, password, type, tel });
-    return res.status(400).json({ error: 'All fields are required' });
+  const { type, ...fields } = req.body;
+
+  // Per verificare che non ci siano campi required vuoti
+  const missingFields = Object.entries(fields).filter(([key, value]) => value.required && !value.value);
+
+  if (missingFields.length > 0) {
+    return res.status(400).json({
+      error: 'All required fields are missing',
+      missingFields: missingFields.map(([key]) => key),
+    });
   }
+
+  const nome = fields.nome.value;
+  const email = fields.email.value;
+  const password = fields.password.value.toString();
+  const tel = fields.tel.value;
 
   try {
     const saltRounds = 10;
@@ -34,7 +45,7 @@ router.post('/create-user', async (req, res) => {
 
     res.status(201).json({ message: 'User created successfully', data });
   } catch (err) {
-    res.status(500).json({ error: 'Something went wrong', details: err.message });
+    res.status(500).json({ error: `Something went wrong`, details: err.message });
   }
 });
 
