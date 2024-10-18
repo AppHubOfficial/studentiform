@@ -41,6 +41,7 @@ function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+<<<<<<< Updated upstream
 
         const dataToSend = filteredFields.reduce((acc, field) => {
             acc[field.name] = {
@@ -50,6 +51,11 @@ function LoginPage() {
             return acc;
         }, { type });
 
+=======
+    
+        const dataToSend = { ...formData, type };
+    
+>>>>>>> Stashed changes
         try {
             const response = await fetch('http://localhost:5000/api/users/create-user', {
                 method: 'POST',
@@ -58,20 +64,23 @@ function LoginPage() {
                 },
                 body: JSON.stringify(dataToSend),
             });
-
+    
             const data = await response.json();
-
+    
             if (response.ok) {
                 console.log('Utente creato:', data);
                 setFormData(initialFormData);
+                
+                // Reindirizza l'utente alla dashboard
+                navigate('/dashboard');
             } else {
                 console.error('Errore nella creazione dell\'utente:', data.error);
             }
         } catch (error) {
             console.error('Errore di rete:', error);
         }
-
     };
+    
 
 
     return (

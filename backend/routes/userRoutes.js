@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const supabase = require('../utils/supabaseClient');
 
+// Rotta per il login e gestione sessione
 router.post('/create-user', async (req, res) => {
 
   const { type, ...fields } = req.body;
@@ -49,5 +50,25 @@ router.post('/create-user', async (req, res) => {
   }
 });
 
+
+// Rotta per recuperare i dati della sessione dell'utente loggato
+router.get('/session', (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  res.status(200).json({ userId: req.session.userId, userType: req.session.userType });
+});
+
+// Rotta per disconnettersi (logout)
+router.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Logout failed' });
+    }
+
+    res.status(200).json({ message: 'Logged out successfully' });
+  });
+});
 
 module.exports = router;

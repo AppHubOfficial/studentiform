@@ -17,7 +17,7 @@ function Home() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100vh',
+        height: '93vh',
         gap: 3,
         backgroundColor: '#f5f5f5',
         padding: '20px',
