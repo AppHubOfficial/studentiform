@@ -41,7 +41,6 @@ function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-<<<<<<< Updated upstream
 
         const dataToSend = filteredFields.reduce((acc, field) => {
             acc[field.name] = {
@@ -51,11 +50,6 @@ function LoginPage() {
             return acc;
         }, { type });
 
-=======
-    
-        const dataToSend = { ...formData, type };
-    
->>>>>>> Stashed changes
         try {
             const response = await fetch('http://localhost:5000/api/users/create-user', {
                 method: 'POST',

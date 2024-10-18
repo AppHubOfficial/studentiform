@@ -44,10 +44,19 @@ router.post('/create-user', async (req, res) => {
       return res.status(500).json({ error: error.message });
     }
 
+    req.session.userEmail = email;
+    req.session.userType = type;
+
+    console.log("Dati della sessione salvati:", req.session);
+
     res.status(201).json({ message: 'User created successfully', data });
   } catch (err) {
     res.status(500).json({ error: `Something went wrong`, details: err.message });
   }
+});
+
+router.get('/login', (req, res) => {
+  //////////// LOGIN ////////////////
 });
 
 
