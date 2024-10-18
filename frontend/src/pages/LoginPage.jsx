@@ -19,8 +19,8 @@ function LoginPage() {
         { label: 'Email', name: 'email', type: 'email', required: true, roles: ['login', 'student', 'teacher'] },
         { label: 'Password', name: 'password', type: 'password', required: true, roles: ['login', 'student', 'teacher'] },
         { label: 'Numero di Telefono', name: 'tel', type: 'text', required: true, roles: ['student', 'teacher'] },
-        { label: 'Università', name: 'università', type: 'text', required: false, roles: ['student'] },
-        { label: 'Facoltà', name: 'Facoltà', type: 'text', required: false, roles: ['student'] }
+        { label: 'Università', name: 'university', type: 'text', required: false, roles: ['student'] },
+        { label: 'Facoltà', name: 'faculty', type: 'text', required: false, roles: ['student'] }
     ];
 
     const filteredFields = formFields.filter(field => field.roles.includes(type)); // Per mostrare solo i campi relativi a studente o insegnante
@@ -39,6 +39,8 @@ function LoginPage() {
         });
     };
 
+
+    ////////////////////////////////////
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -50,31 +52,63 @@ function LoginPage() {
             return acc;
         }, { type });
 
-        try {
-            const response = await fetch('http://localhost:5000/api/users/create-user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dataToSend),
-            });
-    
-            const data = await response.json();
-    
-            if (response.ok) {
-                console.log('Utente creato:', data);
-                setFormData(initialFormData);
-                
-                // Reindirizza l'utente alla dashboard
-                navigate('/dashboard');
-            } else {
-                console.error('Errore nella creazione dell\'utente:', data.error);
+
+        // Se si sta facendo il login redirecto a users/login
+        if (type === "login") {
+
+            try {
+                const response = await fetch('http://localhost:5000/api/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dataToSend),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    setFormData(initialFormData);
+
+                    navigate('/dashboard');
+                } else {
+                    console.error('Errore nel login dell\'utente:', data.error);
+                }
+            } catch (error) {
+                console.error('Errore di rete:', error);
             }
-        } catch (error) {
-            console.error('Errore di rete:', error);
+
+        } else { // Altrimenti redirecto a users/create-user
+
+            try {
+                const response = await fetch('http://localhost:5000/api/users/create-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dataToSend),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    console.log('Utente creato:', data);
+                    setFormData(initialFormData);
+
+                    // Reindirizza l'utente alla dashboard
+                    navigate('/dashboard');
+                } else {
+                    console.error('Errore nella creazione dell\'utente:', data.error);
+                }
+            } catch (error) {
+                console.error('Errore di rete:', error);
+            }
         }
+
+
     };
-    
+    ////////////////////////////////////
+
 
 
     return (

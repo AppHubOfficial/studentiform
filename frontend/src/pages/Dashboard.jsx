@@ -5,9 +5,23 @@ import { useNavigate } from 'react-router-dom';
 function Dashboard() {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Logica di logout qui, eventualmente resettare lo stato o cancellare token
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      const renspose = await fetch('http://localhost:5000/api/users/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      if (renspose.ok) {
+        navigate('/')
+      } else {
+        console.error("Errore durante logout")
+      }
+    } catch (error) {
+      console.error('Errore durante il logout:', error);
+    }
+
+    
   };
 
   return (

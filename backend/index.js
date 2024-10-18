@@ -5,7 +5,6 @@ const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
-// Configura le opzioni di CORS
 const corsOptions = {
   origin: 'http://localhost:3000',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -16,12 +15,12 @@ app.use(cors(corsOptions));
 
 // Middleware per la gestione delle sessioni
 app.use(session({
-  secret: 'zgyuiuyt6u$T$E$T£WVV£Vr*éù-3', // Cambialo con una stringa sicura
-  resave: false, // Evita di risalvare la sessione se non è stata modificata
-  saveUninitialized: true, // Salva la sessione anche se non è stata inizializzata
+  secret: 'zgyuiuyt6u$T$E$T£WVV£Vr*éù-3',
+  resave: false,
+  saveUninitialized: true, 
   cookie: {
-    secure: false, // Imposta su true se usi HTTPS
-    httpOnly: true, // Impedisce l'accesso al cookie dal lato client
+    secure: false,
+    httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 // Durata della sessione (1 giorno)
   }
 }));
