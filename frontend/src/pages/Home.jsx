@@ -26,7 +26,7 @@ function Home() {
       <Typography variant="h4" component="h1" gutterBottom>
         Benvenuto!
       </Typography>
-      
+
       <Box sx={{ display: 'flex', gap: 2 }}>
         <Button variant="contained" color="primary" onClick={() => handleClick('student')}>
           Sono uno Studente
@@ -37,7 +37,7 @@ function Home() {
       </Box>
 
       <Typography variant="body1">Se sei già registrato, effettua il login:</Typography>
-      <Button variant="outlined" onClick={() => handleClick('login')}>
+      <Button variant="contained" onClick={() => handleClick('login')} sx={{ backgroundColor: '#00b11e', color: '#ffffff' }}>
         Login
       </Button>
     </Box>

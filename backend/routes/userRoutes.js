@@ -4,15 +4,12 @@ const bcrypt = require('bcrypt');
 const supabase = require('../utils/supabaseClient');
 
 router.post('/create-user', async (req, res) => {
-
   const { type, ...fields } = req.body;
 
-  // Per verificare che non ci siano campi required vuoti
   const missingFields = Object.entries(fields).filter(([key, value]) => value.required && !value.value);
-
   if (missingFields.length > 0) {
     return res.status(400).json({
-      error: 'All required fields are missing',
+      error: 'Non tutti i campi required sono compilati',
       missingFields: missingFields.map(([key]) => key),
     });
   }
@@ -27,8 +24,6 @@ router.post('/create-user', async (req, res) => {
   try {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    console.log(university)
 
     const { data, error } = await supabase
       .from('users')
@@ -52,13 +47,21 @@ router.post('/create-user', async (req, res) => {
     req.session.userEmail = email;
     req.session.userType = type;
 
-    console.log("Dati della sessione salvati:", req.session);
+    await new Promise((resolve, reject) => {
+      req.session.save((err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
 
+    console.log("Dati della sessione salvati create user:", req.session);
     res.status(201).json({ message: 'User created successfully', data });
   } catch (err) {
     res.status(500).json({ error: `Something went wrong`, details: err.message });
   }
 });
+
+
 
 router.post('/login', async (req, res) => {
   console.log(req.body);
@@ -71,7 +74,7 @@ router.post('/login', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('users')
-      .select('email, password')
+      .select('password, type')
       .eq('email', email.value);
 
     if (error) {
@@ -79,7 +82,7 @@ router.post('/login', async (req, res) => {
     }
 
     if (data.length === 0) {
-      return res.status(404).json({error: 'Email not found: ' + email.value});
+      return res.status(404).json({ error: 'Email not found: ' + email.value });
     }
 
     const matchPass = await bcrypt.compare(password.value, data[0].password);
@@ -88,7 +91,10 @@ router.post('/login', async (req, res) => {
       res.status(404).json({ error: 'Incorrect password' });
     }
 
-    req.session.userEmail = email;
+    req.session.userEmail = email.value;
+    req.session.userType = data[0].type;
+
+    console.log("Dati della sessione salvati:", req.session);
     return res.status(200).json({ message: 'Login successful' });
 
   } catch (err) {
@@ -98,24 +104,40 @@ router.post('/login', async (req, res) => {
 });
 
 
-
-router.post('/session', (req, res) => {
-  if (!req.session.userId) {
-    return res.status(401).json({ error: 'Not authenticated' });
-  }
-
-  res.status(200).json({ userId: req.session.userId, userType: req.session.userType });
-});
-
-
 router.post('/logout', (req, res) => {
+  console.log("Dati della sessione salvati logout:", req.session);
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ error: 'Logout failed' });
     }
+    console.log("Logged out successfully");
 
     res.status(200).json({ message: 'Logged out successfully' });
   });
+});
+
+
+router.post('/getData', async (req, res) => {
+
+  const email = req.session.userEmail;
+
+  console.log("Dati della sessione salvati getData:", req.session);
+
+  if (!email) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  const { data, error } = await supabase
+    .from('users')
+    .select('id, nome, email, tel, type, university, faculty, created_at')
+    .eq('email', email);
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  console.log(data);
+  res.status(200).json(data);
 });
 
 module.exports = router;

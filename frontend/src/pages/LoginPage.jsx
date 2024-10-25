@@ -62,6 +62,7 @@ function LoginPage() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
+                    credentials: 'include',
                     body: JSON.stringify(dataToSend),
                 });
 
@@ -86,6 +87,7 @@ function LoginPage() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
+                    credentials: 'include',
                     body: JSON.stringify(dataToSend),
                 });
 

@@ -13,41 +13,27 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Middleware per la gestione delle sessioni
 app.use(session({
-  secret: 'zgyuiuyt6u$T$E$T£WVV£Vr*éù-3',
+  secret: '89g^_oPt7_0GYlC;YV#[8&uQ&3b,v&!q',
   resave: false,
-  saveUninitialized: true, 
+  saveUninitialized: false,
   cookie: {
-    secure: false,
+    secure: false, // Mettere a true in produzione (HTTPS)
     httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 // Durata della sessione (1 giorno)
+    maxAge: 1000 * 60 * 60 * 24 // 1 giorno
   }
 }));
 
-// Middleware per il parsing del JSON
 app.use(express.json());
 
-// Middleware per l'header di controllo degli accessi
-app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
-});
-
-// Middleware di log delle richieste
 app.use((req, res, next) => {
   console.log(`Received ${req.method} request for '${req.url}'`);
   console.log('Request body:', req.body);
   next();
 });
 
-// Rotte dell'applicazione
 app.use('/api/users', userRoutes);
 
-// Avvia il server sulla porta specificata
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
