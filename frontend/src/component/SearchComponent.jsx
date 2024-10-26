@@ -1,34 +1,53 @@
-import React from 'react';
-import { Box, Typography, Divider, TextField, Slider, FormControl, MenuItem, InputLabel, Select } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, Divider, TextField, Slider, FormControl, MenuItem, InputLabel, Select, InputAdornment, IconButton } from '@mui/material';
 import Grid from '@mui/material/Grid2';
+import SearchIcon from '@mui/icons-material/Search';
 
 function SearchComponent({ handleChangeRoles }) {
+    const [value, setValue] = useState([0, 100]);
+
+    const handleChangeDistance = (event, newValue) => {
+        setValue(newValue);
+    };
     return (
         <>
-            <Divider />
             <Box className="searchContainer" sx={{ padding: 3 }}>
                 <Typography style={{ marginBottom: '50px' }} variant="h5" component="h1" gutterBottom>
                     Ricerca
                 </Typography>
+                <TextField
+                    style={{ maxWidth: '450px', marginBottom: '50px' }}
+                    fullWidth
+                    label="Cerca"
+                    variant="outlined"
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton>
+                                    <SearchIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
 
-                <Grid container spacing={6}>
-                    <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="Cerca" variant="outlined" />
-                    </Grid>
+                <Grid container spacing={6} style={{ marginLeft: '20px' }}>
 
                     <Grid item xs={12} sm={6}>
                         <Typography variant="body1">Cerca per distanza</Typography>
                         <Slider
-                            defaultValue={0}
-                            aria-label="Default"
+                            value={value}
+                            onChange={handleChangeDistance}
                             valueLabelDisplay="auto"
-                            sx={{ mt: 2 }}
+                            min={0}
+                            max={100}
+                            disableSwap
                         />
                     </Grid>
 
-                    <Grid item xs={12} sm={6}>
+                    {/*<Grid item xs={12} sm={6}>
                         <TextField style={{ width: '70px' }} label="Età" variant="outlined" />
-                    </Grid>
+                    </Grid>*/}
 
                     <Grid item xs={12} sm={6}>
                         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
@@ -39,9 +58,9 @@ function SearchComponent({ handleChangeRoles }) {
                                 onChange={handleChangeRoles}
                                 label="Ruolo"
                             >
-                                <MenuItem value="teacher">Tutti</MenuItem>
-                                <MenuItem value="teacher">Insegnante</MenuItem>
-                                <MenuItem value="student">Studente</MenuItem>
+                                <MenuItem value="all">Tutti</MenuItem>
+                                <MenuItem value="insegnante">Insegnante</MenuItem>
+                                <MenuItem value="studente">Studente</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>

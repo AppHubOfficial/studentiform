@@ -28,10 +28,10 @@ function Home() {
       </Typography>
 
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <Button variant="contained" color="primary" onClick={() => handleClick('student')}>
+        <Button variant="contained" color="primary" onClick={() => handleClick('studente')}>
           Sono uno Studente
         </Button>
-        <Button variant="contained" color="secondary" onClick={() => handleClick('teacher')}>
+        <Button variant="contained" color="secondary" onClick={() => handleClick('insegnante')}>
           Sono un Insegnante
         </Button>
       </Box>

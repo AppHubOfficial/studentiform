@@ -117,11 +117,11 @@ router.post('/logout', (req, res) => {
 });
 
 
-router.post('/getData', async (req, res) => {
+router.post('/getProfileData', async (req, res) => {
 
   const email = req.session.userEmail;
 
-  console.log("Dati della sessione salvati getData:", req.session);
+  console.log("Dati della sessione salvati getProfileData:", req.session);
 
   if (!email) {
     return res.status(401).json({ error: 'Not authenticated' });
@@ -139,5 +139,29 @@ router.post('/getData', async (req, res) => {
   console.log(data);
   res.status(200).json(data);
 });
+
+
+router.post('/getUsersData', async (req, res) => {
+  const email = req.session.userEmail;
+
+  console.log("Dati della sessione salvati getUsersData:", req.session);
+
+  if (!email) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  const { data, error } = await supabase
+    .from('users')
+    .select('nome, email, tel, type, university, faculty, created_at');
+
+  if (error) {
+    console.error('Errore nel recupero dei dati:', error);
+    return res.status(500).json({ error: 'Errore nel recupero dei dati' });
+  }
+
+  console.log('Dati recuperati:', data);
+  return res.json(data); 
+});
+
 
 module.exports = router;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Link as MuiLink } from '@mui/material';
+import { TextField, Button, Box, Link as MuiLink, Alert } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -10,17 +10,19 @@ function LoginPage() {
 
     const location = useLocation();
     const { type } = location.state || {};
+    const [errorDuplicateEmail, setErrorDuplicateEmail] = useState(false);
+    const [errorFailLogin, setErrorFailLogin] = useState(false);
 
     let text = type === 'login' ? "Non sei ancora registrato?" : "Hai già un account?";
 
     const formFields = [
-        { label: 'Nome', name: 'nome', type: 'text', required: true, roles: ['student', 'teacher'] },
-        { label: 'Cognome', name: 'cognome', type: 'text', required: true, roles: ['student', 'teacher'] },
-        { label: 'Email', name: 'email', type: 'email', required: true, roles: ['login', 'student', 'teacher'] },
-        { label: 'Password', name: 'password', type: 'password', required: true, roles: ['login', 'student', 'teacher'] },
-        { label: 'Numero di Telefono', name: 'tel', type: 'text', required: true, roles: ['student', 'teacher'] },
-        { label: 'Università', name: 'university', type: 'text', required: false, roles: ['student'] },
-        { label: 'Facoltà', name: 'faculty', type: 'text', required: false, roles: ['student'] }
+        { label: 'Nome', name: 'nome', type: 'text', required: true, roles: ['studente', 'insegnante'] },
+        { label: 'Cognome', name: 'cognome', type: 'text', required: true, roles: ['studente', 'insegnante'] },
+        { label: 'Email', name: 'email', type: 'email', required: true, roles: ['login', 'studente', 'insegnante'] },
+        { label: 'Password', name: 'password', type: 'password', required: true, roles: ['login', 'studente', 'insegnante'] },
+        { label: 'Numero di Telefono', name: 'tel', type: 'text', required: true, roles: ['studente', 'insegnante'] },
+        { label: 'Università', name: 'university', type: 'text', required: false, roles: ['studente'] },
+        { label: 'Facoltà', name: 'faculty', type: 'text', required: false, roles: ['studente'] }
     ];
 
     const filteredFields = formFields.filter(field => field.roles.includes(type)); // Per mostrare solo i campi relativi a studente o insegnante
@@ -74,6 +76,8 @@ function LoginPage() {
                     navigate('/dashboard');
                 } else {
                     console.error('Errore nel login dell\'utente:', data.error);
+                    setErrorFailLogin(true);
+                    
                 }
             } catch (error) {
                 console.error('Errore di rete:', error);
@@ -101,6 +105,7 @@ function LoginPage() {
                     navigate('/dashboard');
                 } else {
                     console.error('Errore nella creazione dell\'utente:', data.error);
+                    setErrorDuplicateEmail(true);
                 }
             } catch (error) {
                 console.error('Errore di rete:', error);
@@ -131,6 +136,12 @@ function LoginPage() {
                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
             }}
         >
+            {errorDuplicateEmail && (
+                <Alert severity="error">Email già registrata</Alert>
+            )}
+            {errorFailLogin && (
+                <Alert severity="error">Credenziali errate</Alert>
+            )}
             <ArrowBackIcon style={{ cursor: 'pointer' }} onClick={() => navigate('/')}></ArrowBackIcon>
             {filteredFields.map((field) => (
                 <TextField

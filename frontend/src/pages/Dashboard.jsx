@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, TextField, Autocomplete, Slider } from '@mui/material';
+import { Box, Typography, Button, TextField, Autocomplete, Slider, Divider } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DrawerMenu from '../component/DrawerMenu';
 import MenuIcon from '@mui/icons-material/Menu';
-import Divider from '@mui/material/Divider';
 import '../assets/styles/Dashboard.css';
-
 import SearchComponent from '../component/SearchComponent';
+import TableDataComponent from '../component/TableDataComponent';
 
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email;
-  const [userData, setUserData] = useState(null);
-  const [open, setOpen] = React.useState(false);
+  const [profileData, setProfileData] = useState(null);
+  const [usersData, setUsersData] = useState(null);
+  const [open, setOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState('');
 
   const toggleDrawer = (newOpen) => () => {
@@ -37,16 +37,14 @@ function Dashboard() {
     }
   };
 
+  const handleChangeRoles = (event) => {
+    setSelectedRole(event.target.value);
+  };
 
-    const handleChangeRoles = (event) => {
-        setSelectedRole(event.target.value);
-    };
-
-  /////// getData ////// 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUserProfileData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/users/getData', {
+        const response = await fetch('http://localhost:5000/api/users/getProfileData', {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -56,19 +54,40 @@ function Dashboard() {
 
         if (response.ok) {
           const data = await response.json();
-          setUserData(data);
-          console.log(data);
+          setProfileData(data[0] || {});
         } else {
-          const errorMessage = await response.text();
-          console.error(`Errore in getData: ${response.status} - ${errorMessage}`);
+          console.error(`Errore in getProfileData: ${response.status}`);
         }
       } catch (error) {
-        console.error('Errore durante il recupero dei dati:', error);
+        console.error('Errore durante il recupero dei dati del profilo:', error);
       }
     };
 
-    fetchData();
-  }, []); // In questo modo esegue al caricamento del componente
+    const fetchAllUsersData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/users/getUsersData', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data)
+          setUsersData(data);
+        } else {
+          console.error(`Errore in getUsersData: ${response.status}`);
+        }
+      } catch (error) {
+        console.error('Errore durante il recupero dei dati degli utenti:', error);
+      }
+    };
+
+    fetchUserProfileData();
+    fetchAllUsersData();
+  }, []);
 
   return (
     <Box
@@ -83,31 +102,32 @@ function Dashboard() {
         padding: '20px',
       }}
     >
-      {userData ? (
+      {profileData ? (
         <>
-          <MenuIcon onClick={toggleDrawer(true)} style={{ cursor: 'pointer' }} />
-          <DrawerMenu open={open} toggleDrawer={toggleDrawer} handleLogout={handleLogout} /> {/* Passa handleLogout come prop */}
+          <MenuIcon onClick={toggleDrawer(true)} sx={{ cursor: 'pointer' }} />
+          <DrawerMenu open={open} toggleDrawer={toggleDrawer} handleLogout={handleLogout} />
 
           <Typography variant="h4" component="h1" gutterBottom>
             Benvenuto{" "}
             <Typography component="span" variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-              {userData[0]?.nome}!
+              {profileData.nome}!
             </Typography>
           </Typography>
-
 
           <Typography variant="body1">
             Sei autenticato con successo come{" "}
             <Typography component="span" variant="body1" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-              {userData[0]?.type === "teacher" ? "insegnante" : "studente"}
-            </Typography>
-            . Puoi gestire il tuo account qui.
+              {profileData.type === "insegnante" ? "insegnante" : "studente"}
+            </Typography>.
+            Puoi gestire il tuo account qui.
           </Typography>
+          <Divider />
 
-
-        
-          {userData[0]?.type === "teacher" && (
-            <SearchComponent handleChangeRoles={handleChangeRoles}/>
+          {profileData.type === "insegnante" && (
+            <>
+              <SearchComponent handleChangeRoles={handleChangeRoles} />
+              <TableDataComponent usersData={usersData} />
+            </>
           )}
         </>
       ) : (
