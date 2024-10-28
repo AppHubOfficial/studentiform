@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Paper } from '@mui/material';
+import { Box, Paper, CircularProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 function TableDataComponent({ usersData }) {
@@ -38,18 +38,24 @@ function TableDataComponent({ usersData }) {
     return (
         <>
             <Box>
-                <Paper sx={{ height: 500, width: '100%' }}>
-                    <DataGrid
-                        rows={usersData}
-                        columns={columns}
-                        getRowId={(row) => row.email}
-                        paginationModel={paginationModel}
-                        onPaginationModelChange={setPaginationModel}
-                        pageSizeOptions={[10, 20, 50]}
-                        checkboxSelection
-                        sx={{ border: 0 }}
-                    />
-                </Paper>
+                {!usersData ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    <Paper sx={{ height: 500, width: '100%' }}>
+                        <DataGrid
+                            rows={usersData}
+                            columns={columns}
+                            getRowId={(row) => row.email}
+                            paginationModel={paginationModel}
+                            onPaginationModelChange={setPaginationModel}
+                            pageSizeOptions={[10, 20, 50]}
+                            checkboxSelection
+                            sx={{ border: 0 }}
+                        />
+                    </Paper>
+                )}
             </Box>
         </>
     );

@@ -15,7 +15,10 @@ function Dashboard() {
   const [usersData, setUsersData] = useState(null);
   const [tempUsersData, setTempUsersData] = useState(null);
   const [open, setOpen] = useState(false);
-  const [selectedRole, setSelectedRole] = useState('');
+
+  const [selectedRole, setSelectedRole] = useState("");
+  const [textSearchInput, setTextSearchInput] = useState("");
+
 
   ////////// Funzioni SearchComponent //////////
 
@@ -24,22 +27,32 @@ function Dashboard() {
   };
 
   const handleSearchInput = (event) => {
-    //console.log(usersData)
-    const value = event.target.value;
-    console.log(value);
-
-    if (value.trim() == "") {
-      setUsersData(tempUsersData);
-      return;
-    }
-
-    let filteredUsersData = usersData?.filter(user => {
-      return user.nome.includes(value) || user.email.includes(value) || user.tel.includes(value) 
-    });
-
-    setUsersData(filteredUsersData);
-
+    setTextSearchInput(event.target.value);
   }
+
+  // Funzione per applicare tutti i filtri
+  useEffect(() => {
+    let filteredUsersData = tempUsersData;
+  
+    if (textSearchInput.trim() !== "") {
+      filteredUsersData = filteredUsersData.filter(user => {
+        return (
+          user.nome.includes(textSearchInput) || 
+          user.email.includes(textSearchInput) || 
+          user.tel.includes(textSearchInput)
+        );
+      });
+    }
+  
+    if (selectedRole && selectedRole !== "all") {
+      filteredUsersData = filteredUsersData.filter(user => {
+        return user.type.includes(selectedRole);
+      });
+    }
+  
+    setUsersData(filteredUsersData);
+  
+  }, [selectedRole, textSearchInput]);
 
   /////////////////////////////////////////////
 
