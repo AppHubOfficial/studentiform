@@ -13,8 +13,35 @@ function Dashboard() {
   const email = location.state?.email;
   const [profileData, setProfileData] = useState(null);
   const [usersData, setUsersData] = useState(null);
+  const [tempUsersData, setTempUsersData] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState('');
+
+  ////////// Funzioni SearchComponent //////////
+
+  const handleChangeRoles = (event) => {
+    setSelectedRole(event.target.value);
+  };
+
+  const handleSearchInput = (event) => {
+    //console.log(usersData)
+    const value = event.target.value;
+    console.log(value);
+
+    if (value.trim() == "") {
+      setUsersData(tempUsersData);
+      return;
+    }
+
+    let filteredUsersData = usersData?.filter(user => {
+      return user.nome.includes(value) || user.email.includes(value) || user.tel.includes(value) 
+    });
+
+    setUsersData(filteredUsersData);
+
+  }
+
+  /////////////////////////////////////////////
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -37,10 +64,8 @@ function Dashboard() {
     }
   };
 
-  const handleChangeRoles = (event) => {
-    setSelectedRole(event.target.value);
-  };
 
+  ///////////////////////////////////////
   useEffect(() => {
     const fetchUserProfileData = async () => {
       try {
@@ -77,6 +102,7 @@ function Dashboard() {
           const data = await response.json();
           console.log(data)
           setUsersData(data);
+          setTempUsersData(data);
         } else {
           console.error(`Errore in getUsersData: ${response.status}`);
         }
@@ -125,7 +151,7 @@ function Dashboard() {
 
           {profileData.type === "insegnante" && (
             <>
-              <SearchComponent handleChangeRoles={handleChangeRoles} />
+              <SearchComponent handleChangeRoles={handleChangeRoles} handleSearchInput={handleSearchInput} />
               <TableDataComponent usersData={usersData} />
             </>
           )}

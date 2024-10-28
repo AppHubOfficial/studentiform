@@ -3,7 +3,7 @@ import { Box, Typography, Divider, TextField, Slider, FormControl, MenuItem, Inp
 import Grid from '@mui/material/Grid2';
 import SearchIcon from '@mui/icons-material/Search';
 
-function SearchComponent({ handleChangeRoles }) {
+function SearchComponent({ handleChangeRoles, handleSearchInput }) {
     const [value, setValue] = useState([0, 100]);
 
     const handleChangeDistance = (event, newValue) => {
@@ -20,6 +20,7 @@ function SearchComponent({ handleChangeRoles }) {
                     fullWidth
                     label="Cerca"
                     variant="outlined"
+                    onChange={handleSearchInput}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
