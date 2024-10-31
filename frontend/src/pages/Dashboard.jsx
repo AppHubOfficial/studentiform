@@ -1,23 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, TextField, Autocomplete, Slider, Divider } from '@mui/material';
+import React, { useEffect, useState, useContext } from 'react';
+import { Box, Typography, Alert, Divider } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DrawerMenu from '../component/DrawerMenu';
 import MenuIcon from '@mui/icons-material/Menu';
 import '../assets/styles/Dashboard.css';
 import SearchComponent from '../component/SearchComponent';
 import TableDataComponent from '../component/TableDataComponent';
+import Context from '../Context';
+
+export const UserContext = React.createContext();
 
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const email = location.state?.email;
-  const [profileData, setProfileData] = useState(null);
+
+  //const [profileData, setProfileData] = useState(null);
+  const { profileData, setProfileData } = useContext(Context);
+
   const [usersData, setUsersData] = useState(null);
   const [tempUsersData, setTempUsersData] = useState(null);
   const [open, setOpen] = useState(false);
 
   const [selectedRole, setSelectedRole] = useState("");
   const [textSearchInput, setTextSearchInput] = useState("");
+
+  const [errorTimeout, setErrorTimeout] = useState(false);
+  const TIMEOUT = 6000;
 
 
   ////////// Funzioni SearchComponent //////////
@@ -80,6 +88,9 @@ function Dashboard() {
 
   ///////////////////////////////////////
   useEffect(() => {
+
+    const timeout = setTimeout(() => setErrorTimeout(true), TIMEOUT);
+
     const fetchUserProfileData = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/users/getProfileData', {
@@ -91,6 +102,7 @@ function Dashboard() {
         });
 
         if (response.ok) {
+          clearTimeout(timeout);
           const data = await response.json();
           setProfileData(data[0] || {});
         } else {
@@ -113,8 +125,9 @@ function Dashboard() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data)
+          console.log(data);
           setUsersData(data);
+          clearTimeout(timeout);
           setTempUsersData(data);
         } else {
           console.error(`Errore in getUsersData: ${response.status}`);
@@ -126,7 +139,13 @@ function Dashboard() {
 
     fetchUserProfileData();
     fetchAllUsersData();
+
+    return () => clearTimeout(timeout); 
   }, []);
+
+  useEffect(() => {
+    
+  }, [profileData])
 
   return (
     <Box
@@ -170,7 +189,12 @@ function Dashboard() {
           )}
         </>
       ) : (
-        <Typography variant="body1">Caricamento dati utente...</Typography>
+        errorTimeout ? (
+          <Alert severity="error">Caricamento fallito.</Alert>
+        ) : (
+          <Alert severity="info">Caricamento dati utente...</Alert>
+        )
+        
       )}
     </Box>
   );

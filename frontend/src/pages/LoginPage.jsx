@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Link as MuiLink, Alert } from '@mui/material';
+import { TextField, Button, Box, Link as MuiLink, Alert, Checkbox } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -21,7 +21,7 @@ function LoginPage() {
         { label: 'Email', name: 'email', type: 'email', required: true, roles: ['login', 'studente', 'insegnante'] },
         { label: 'Password', name: 'password', type: 'password', required: true, roles: ['login', 'studente', 'insegnante'] },
         { label: 'Numero di Telefono', name: 'tel', type: 'text', required: true, roles: ['studente', 'insegnante'] },
-        { label: 'Università', name: 'university', type: 'text', required: false, roles: ['studente'] },
+        { label: 'Lavoro e/o scuola', name: 'schoolOrWork', type: 'text', required: true, roles: ['studente'] },
         { label: 'Facoltà', name: 'faculty', type: 'text', required: false, roles: ['studente'] }
     ];
 
