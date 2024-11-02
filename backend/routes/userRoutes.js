@@ -5,6 +5,7 @@ const supabase = require('../utils/supabaseClient');
 
 router.post('/create-user', async (req, res) => {
   const { type, ...fields } = req.body;
+  console.log(req.body)
 
   const missingFields = Object.entries(fields).filter(([key, value]) => value.required && !value.value);
   if (missingFields.length > 0) {
@@ -20,6 +21,8 @@ router.post('/create-user', async (req, res) => {
   const tel = fields.tel.value;
   const university = fields.university?.value;
   const faculty = fields.faculty?.value;
+  const distance = fields.distance?.value;
+  const activities = fields.activities?.value;
 
   try {
     const saltRounds = 10;
@@ -36,12 +39,17 @@ router.post('/create-user', async (req, res) => {
           tel,
           university,
           faculty,
+          distance,
+          activities,
           created_at: new Date()
         }
       ]);
 
     if (error) {
-      return res.status(500).json({ error: error.message });
+      if (error.code === '23505') { // Codice di errore specifico per violazione di unicità in PostgreSQL
+        return res.status(409).json({ error: 'Email già registrata' });
+      }
+      return res.status(500).json({ error: error.message, details: error });
     }
 
     req.session.userEmail = email;
@@ -129,7 +137,7 @@ router.post('/getProfileData', async (req, res) => {
 
   const { data, error } = await supabase
     .from('users')
-    .select('id, nome, email, tel, type, university, faculty, created_at')
+    .select('id, nome, email, tel, type, university, faculty, activities, distance, created_at')
     .eq('email', email);
 
   if (error) {
@@ -143,6 +151,7 @@ router.post('/getProfileData', async (req, res) => {
 
 router.post('/getUsersData', async (req, res) => {
   const email = req.session.userEmail;
+  const type = req.session.userType;
 
   console.log("Dati della sessione salvati getUsersData:", req.session);
 
@@ -150,9 +159,13 @@ router.post('/getUsersData', async (req, res) => {
     return res.status(401).json({ error: 'Not authenticated' });
   }
 
+  if (type !== "insegnante") {
+    return res.status(401).json({ error: 'Not authorized' });
+  }
+
   const { data, error } = await supabase
     .from('users')
-    .select('nome, email, tel, type, university, faculty, created_at');
+    .select('nome, email, tel, type, university, faculty, activities, distance, created_at');
 
   if (error) {
     console.error('Errore nel recupero dei dati:', error);
@@ -160,7 +173,19 @@ router.post('/getUsersData', async (req, res) => {
   }
 
   console.log('Dati recuperati:', data);
-  return res.json(data); 
+  return res.json(data);
+});
+
+router.post('/editProfileData', async (req, res) => {
+  const email = req.session.userEmail;
+
+  if (!email) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  
+  
+  
 });
 
 

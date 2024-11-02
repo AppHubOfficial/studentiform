@@ -1,8 +1,6 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import { ContextProvider } from './Context';
-
 import Home from './pages/Home.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import Dashboard from './pages/Dashboard.jsx';
@@ -39,10 +37,8 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <ContextProvider>
-      <RouterProvider router={router} />
-    </ContextProvider>
-    
+    <RouterProvider router={router} />
+
   );
 }
 

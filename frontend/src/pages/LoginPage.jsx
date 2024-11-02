@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Link as MuiLink, Alert, Checkbox } from '@mui/material';
+import { TextField, Button, Box, Link as MuiLink, Alert, Checkbox, FormControlLabel, FormGroup, Typography, Slider } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -7,13 +7,11 @@ import '../assets/styles/LoginPage.css';
 
 function LoginPage() {
     const navigate = useNavigate();
-
     const location = useLocation();
     const { type } = location.state || {};
-    const [errorDuplicateEmail, setErrorDuplicateEmail] = useState(false);
-    const [errorFailLogin, setErrorFailLogin] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
-    let text = type === 'login' ? "Non sei ancora registrato?" : "Hai già un account?";
+    const text = type === 'login' ? "Non sei ancora registrato?" : "Hai già un account?";
 
     const formFields = [
         { label: 'Nome', name: 'nome', type: 'text', required: true, roles: ['studente', 'insegnante'] },
@@ -21,11 +19,14 @@ function LoginPage() {
         { label: 'Email', name: 'email', type: 'email', required: true, roles: ['login', 'studente', 'insegnante'] },
         { label: 'Password', name: 'password', type: 'password', required: true, roles: ['login', 'studente', 'insegnante'] },
         { label: 'Numero di Telefono', name: 'tel', type: 'text', required: true, roles: ['studente', 'insegnante'] },
-        { label: 'Lavoro e/o scuola', name: 'schoolOrWork', type: 'text', required: true, roles: ['studente'] },
-        { label: 'Facoltà', name: 'faculty', type: 'text', required: false, roles: ['studente'] }
+        { label: 'Università', name: 'university', type: 'text', required: false, roles: ['studente'] },
+        { label: 'Facoltà', name: 'faculty', type: 'text', required: false, roles: ['studente'] },
+        { label: 'Attività', name: 'activities', type: 'checkboxSchoolOrWork', required: false, roles: ['studente'] },
+        { label: 'Quanto ti puoi spostare?', name: 'distance', type: 'slider', required: true, roles: ['studente'] }
+
     ];
 
-    const filteredFields = formFields.filter(field => field.roles.includes(type)); // Per mostrare solo i campi relativi a studente o insegnante
+    const filteredFields = formFields.filter(field => field.roles.includes(type));
 
     const initialFormData = filteredFields.reduce((acc, field) => {
         acc[field.name] = '';
@@ -33,6 +34,9 @@ function LoginPage() {
     }, {});
 
     const [formData, setFormData] = useState(initialFormData);
+    const [schoolChecked, setSchoolChecked] = useState(false);
+    const [workChecked, setWorkChecked] = useState(false);
+    const [distance, setDistance] = useState(10);
 
     const handleChange = (e) => {
         setFormData({
@@ -41,8 +45,28 @@ function LoginPage() {
         });
     };
 
+    const handleCheckboxChange = (e) => {
+        const { name, checked } = e.target;
+        if (name === 'school') setSchoolChecked(checked);
+        else if (name === 'work') setWorkChecked(checked);
+        const updatedActivities = [
+            ...(checked ? [name] : formData.activities.filter(val => val !== name)) // Elimina i valori non selezionati
+        ];
 
-    ////////////////////////////////////
+        setFormData({
+            ...formData,
+            activities: updatedActivities
+        });
+    };
+
+    const handleSliderChange = (e, newValue) => {
+        setDistance(newValue);
+        setFormData({
+            ...formData,
+            distance: newValue
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -54,69 +78,37 @@ function LoginPage() {
             return acc;
         }, { type });
 
+        dataToSend.distance = {
+            value: distance,
+            required: true
+        };
 
-        // Se si sta facendo il login redirecto a users/login
-        if (type === "login") {
+        dataToSend.activities = {
+            value: formData.activities || [],
+            required: true
+        };
 
-            try {
-                const response = await fetch('http://localhost:5000/api/users/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify(dataToSend),
-                });
+        try {
+            const response = await fetch(`http://localhost:5000/api/users/${type === 'login' ? 'login' : 'create-user'}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(dataToSend),
+            });
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (response.ok) {
-                    setFormData(initialFormData);
-
-                    navigate('/dashboard');
-                } else {
-                    console.error('Errore nel login dell\'utente:', data.error);
-                    setErrorFailLogin(true);
-                    
-                }
-            } catch (error) {
-                console.error('Errore di rete:', error);
+            if (response.ok) {
+                setFormData(initialFormData);
+                navigate('/dashboard');
+            } else {
+                console.log(data.error)
+                setErrorMessage(data.error || 'Si è verificato un errore sconosciuto');
             }
-
-        } else { // Altrimenti redirecto a users/create-user
-
-            try {
-                const response = await fetch('http://localhost:5000/api/users/create-user', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify(dataToSend),
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    console.log('Utente creato:', data);
-                    setFormData(initialFormData);
-
-                    // Reindirizza l'utente alla dashboard
-                    navigate('/dashboard');
-                } else {
-                    console.error('Errore nella creazione dell\'utente:', data.error);
-                    setErrorDuplicateEmail(true);
-                }
-            } catch (error) {
-                console.error('Errore di rete:', error);
-            }
+        } catch (error) {
+            console.error('Errore di rete:', error);
         }
-
-
     };
-    ////////////////////////////////////
-
-
 
     return (
         <Box
@@ -136,34 +128,63 @@ function LoginPage() {
                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
             }}
         >
-            {errorDuplicateEmail && (
-                <Alert severity="error">Email già registrata</Alert>
-            )}
-            {errorFailLogin && (
-                <Alert severity="error">Credenziali errate</Alert>
-            )}
+            {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
             <ArrowBackIcon style={{ cursor: 'pointer' }} onClick={() => navigate('/')}></ArrowBackIcon>
-            {filteredFields.map((field) => (
-                <TextField
-                    key={field.name}
-                    label={field.label}
-                    name={field.name}
-                    type={field.type}
-                    value={formData[field.name]}
-                    onChange={handleChange}
-                    variant="outlined"
-                    required={field.required}
-                />
-            ))}
-            <Button variant="contained" color="primary" type="submit" style={{ marginTop: '50px' }}>
+
+            {filteredFields.map((field) => {
+                switch (field.type) {
+                    case 'checkboxSchoolOrWork':
+                        return (
+                            <FormGroup key={field.name} sx={{ border: "1px solid #c2c2c2", padding: "15px", borderRadius: "4px" }}>
+                                <Typography sx={{ fontSize: "17px", marginBottom: "10px", color: "#5e5e5e" }} variant="p" component="p">Studi o lavori?</Typography>
+                                <FormControlLabel
+                                    control={<Checkbox checked={schoolChecked} onChange={handleCheckboxChange} name="school" />}
+                                    label="Studio"
+                                />
+                                <FormControlLabel
+                                    control={<Checkbox checked={workChecked} onChange={handleCheckboxChange} name="work" />}
+                                    label="Lavoro"
+                                />
+                            </FormGroup>
+                        );
+                    case 'slider':
+                        return (
+                            <Box key={field.name} sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <Typography id="input-slider" gutterBottom>
+                                    {field.label} {distance}km
+                                </Typography>
+                                <Slider
+                                    value={distance}
+                                    onChange={handleSliderChange}
+                                    aria-labelledby="input-slider"
+                                    min={0}
+                                    max={100}
+                                />
+                            </Box>
+                        );
+                    default:
+                        return (
+                            <TextField
+                                key={field.name}
+                                label={field.label}
+                                name={field.name}
+                                type={field.type}
+                                value={formData[field.name]}
+                                onChange={handleChange}
+                                variant="outlined"
+                                required={field.required}
+                            />
+                        );
+                }
+            })}
+
+            <Button variant="contained" color="primary" type="submit" style={{ marginTop: '30px', marginBottom: "10px" }}>
                 Invia
             </Button>
-
 
             <MuiLink to={type === 'login' ? '/' : '/login'} state={{ type: 'login' }} component={Link}>
                 {text + " Clicca qui"}
             </MuiLink>
-
         </Box>
     );
 }

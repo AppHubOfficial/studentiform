@@ -11,6 +11,8 @@ function TableDataComponent({ usersData }) {
         { field: 'tel', headerName: 'Telefono', width: 130 },
         { field: 'type', headerName: 'Ruolo', width: 130 },
         { field: 'university', headerName: 'Università', width: 130 },
+        { field: 'distance', headerName: 'Distanza', width: 130 },
+        { field: 'activities', headerName: 'Attività', width: 130 },
         { field: 'faculty', headerName: 'Facoltà', width: 130 },
         {
             field: 'created_at',

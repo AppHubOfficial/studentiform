@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Typography, Alert, Divider } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DrawerMenu from '../component/DrawerMenu';
@@ -6,16 +6,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import '../assets/styles/Dashboard.css';
 import SearchComponent from '../component/SearchComponent';
 import TableDataComponent from '../component/TableDataComponent';
-import Context from '../Context';
-
-export const UserContext = React.createContext();
 
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  //const [profileData, setProfileData] = useState(null);
-  const { profileData, setProfileData } = useContext(Context);
+  const [profileData, setProfileData] = useState(null);
 
   const [usersData, setUsersData] = useState(null);
   const [tempUsersData, setTempUsersData] = useState(null);
@@ -104,6 +100,10 @@ function Dashboard() {
         if (response.ok) {
           clearTimeout(timeout);
           const data = await response.json();
+          if (data[0]?.type === "insegnante") {
+            console.log("Insegnante");
+            fetchAllUsersData();
+        }
           setProfileData(data[0] || {});
         } else {
           console.error(`Errore in getProfileData: ${response.status}`);
@@ -138,7 +138,6 @@ function Dashboard() {
     };
 
     fetchUserProfileData();
-    fetchAllUsersData();
 
     return () => clearTimeout(timeout); 
   }, []);
