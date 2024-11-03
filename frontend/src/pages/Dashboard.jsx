@@ -20,6 +20,8 @@ function Dashboard() {
   const [selectedRole, setSelectedRole] = useState("");
   const [textSearchInput, setTextSearchInput] = useState("");
 
+  const [messageErrorLoading, setMessageErrorLoading] = useState("");
+
   const [errorTimeout, setErrorTimeout] = useState(false);
   const TIMEOUT = 6000;
 
@@ -107,6 +109,12 @@ function Dashboard() {
           setProfileData(data[0] || {});
         } else {
           console.error(`Errore in getProfileData: ${response.status}`);
+          if (response.status == 401) {
+            setErrorTimeout(true)
+            setMessageErrorLoading("Non autenticato. Effettua il login prima di accedere alla dashboard")
+          } else {
+            setMessageErrorLoading("Errore di rete")
+          }
         }
       } catch (error) {
         console.error('Errore durante il recupero dei dati del profilo:', error);
@@ -189,7 +197,7 @@ function Dashboard() {
         </>
       ) : (
         errorTimeout ? (
-          <Alert severity="error">Caricamento fallito.</Alert>
+          <Alert severity="error">{messageErrorLoading}</Alert>
         ) : (
           <Alert severity="info">Caricamento dati utente...</Alert>
         )

@@ -180,13 +180,25 @@ router.post('/editProfileData', async (req, res) => {
   const email = req.session.userEmail;
 
   if (!email) {
+    console.log(email);
     return res.status(401).json({ error: 'Not authenticated' });
   }
 
-  
-  
-  
+  const { nome, tel, type, university, faculty, activities, distance } = req.body;
+
+  const { data, error } = await supabase
+    .from('users')
+    .update({ nome, tel, type, university, faculty, activities, distance })
+    .eq('email', email);
+
+  if (error) {
+    console.error('Errore durante aggiornamento profilo:', error);
+    return res.status(500).json({ error: 'Errore aggiornamento profilo' });
+  }
+
+  res.status(200).json(data);
 });
+
 
 
 module.exports = router;

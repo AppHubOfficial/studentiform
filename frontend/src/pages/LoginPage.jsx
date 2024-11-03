@@ -49,9 +49,9 @@ function LoginPage() {
         const { name, checked } = e.target;
         if (name === 'school') setSchoolChecked(checked);
         else if (name === 'work') setWorkChecked(checked);
-        const updatedActivities = [
-            ...(checked ? [name] : formData.activities.filter(val => val !== name)) // Elimina i valori non selezionati
-        ];
+        const updatedActivities = checked
+        ? [...formData.activities, name] // Aggiunge l'attività se selezionata
+        : formData.activities.filter(val => val !== name); // Rimuove l'attività se deselezionata
 
         setFormData({
             ...formData,

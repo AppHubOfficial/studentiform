@@ -5,6 +5,16 @@ import { DataGrid } from '@mui/x-data-grid';
 function TableDataComponent({ usersData }) {
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
 
+    const formattedUsersData = usersData?.map((curr) => {
+        const activitiesString = Array.isArray(curr.activities) ? curr.activities.join(", ") : "";
+        return {
+            ...curr,
+            activities: activitiesString
+        };
+    });
+
+    console.log(formattedUsersData)
+
     const columns = [
         { field: 'nome', headerName: 'Nome', width: 130 },
         { field: 'email', headerName: 'Email', width: 230 },
