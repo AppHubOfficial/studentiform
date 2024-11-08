@@ -257,8 +257,8 @@ function Profilo() {
                             control={
                               <Checkbox
                                 name="activities"
-                                value="school"
-                                checked={formData.activities.includes("school")}
+                                value="scuola"
+                                checked={formData.activities.includes("scuola")}
                                 onChange={handleInputChange}
                               />
                             }
@@ -268,8 +268,8 @@ function Profilo() {
                             control={
                               <Checkbox
                                 name="activities"
-                                value="work"
-                                checked={formData.activities.includes("work")}
+                                value="lavoro"
+                                checked={formData.activities.includes("lavoro")}
                                 onChange={handleInputChange}
                               />
                             }

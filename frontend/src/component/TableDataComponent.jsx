@@ -1,19 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Paper, CircularProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import { userData } from 'three/webgpu';
 
 function TableDataComponent({ usersData }) {
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
 
-    const formattedUsersData = usersData?.map((curr) => {
-        const activitiesString = Array.isArray(curr.activities) ? curr.activities.join(", ") : "";
-        return {
-            ...curr,
-            activities: activitiesString
-        };
-    });
+    console.log(usersData)
 
-    console.log(formattedUsersData)
+    usersData?.forEach((el) => {
+        if (typeof el.activities === 'string') {
+            try {
+                el.activities = JSON.parse(el.activities);
+            } catch (error) {
+                console.error("Errore nel parsing di activities:", error);
+            }
+        }
+    
+        if (Array.isArray(el.activities)) {
+            el.activities = el.activities.join(', ');
+        }
+        console.log(el.activities);
+    });
+    
 
     const columns = [
         { field: 'nome', headerName: 'Nome', width: 130 },

@@ -19,6 +19,7 @@ function Dashboard() {
 
   const [selectedRole, setSelectedRole] = useState("");
   const [textSearchInput, setTextSearchInput] = useState("");
+  const [valueDistance, setValueDistance] = useState([0, 100]);
 
   const [messageErrorLoading, setMessageErrorLoading] = useState("");
 
@@ -32,33 +33,43 @@ function Dashboard() {
     setSelectedRole(event.target.value);
   };
 
+  const handleChangeDistance = (newValue) => {
+    setValueDistance(newValue);
+  };
+
   const handleSearchInput = (event) => {
     setTextSearchInput(event.target.value);
   }
 
-  // Funzione per applicare tutti i filtri
+  // Funzione per applicare tutti i filtri della ricerca
   useEffect(() => {
     let filteredUsersData = tempUsersData;
-  
+
     if (textSearchInput.trim() !== "") {
       filteredUsersData = filteredUsersData.filter(user => {
         return (
-          user.nome.includes(textSearchInput) || 
-          user.email.includes(textSearchInput) || 
+          user.nome.includes(textSearchInput) ||
+          user.email.includes(textSearchInput) ||
           user.tel.includes(textSearchInput)
         );
       });
     }
-  
+
     if (selectedRole && selectedRole !== "all") {
       filteredUsersData = filteredUsersData.filter(user => {
         return user.type.includes(selectedRole);
       });
     }
-  
+
+    if (valueDistance) {
+      filteredUsersData = filteredUsersData?.filter(user => {
+        return user.distance >= valueDistance[0] && user.distance <= valueDistance[1];
+      });
+    }
+
     setUsersData(filteredUsersData);
-  
-  }, [selectedRole, textSearchInput]);
+
+  }, [selectedRole, textSearchInput, valueDistance]);
 
   /////////////////////////////////////////////
 
@@ -105,7 +116,7 @@ function Dashboard() {
           if (data[0]?.type === "insegnante") {
             console.log("Insegnante");
             fetchAllUsersData();
-        }
+          }
           setProfileData(data[0] || {});
         } else {
           console.error(`Errore in getProfileData: ${response.status}`);
@@ -147,11 +158,11 @@ function Dashboard() {
 
     fetchUserProfileData();
 
-    return () => clearTimeout(timeout); 
+    return () => clearTimeout(timeout);
   }, []);
 
   useEffect(() => {
-    
+
   }, [profileData])
 
   return (
@@ -190,7 +201,12 @@ function Dashboard() {
 
           {profileData.type === "insegnante" && (
             <>
-              <SearchComponent handleChangeRoles={handleChangeRoles} handleSearchInput={handleSearchInput} />
+              <SearchComponent
+                handleChangeRoles={handleChangeRoles}
+                handleSearchInput={handleSearchInput}
+                handleChangeDistance={handleChangeDistance}
+                valueDistance={valueDistance}
+              />
               <TableDataComponent usersData={usersData} />
             </>
           )}
@@ -201,7 +217,7 @@ function Dashboard() {
         ) : (
           <Alert severity="info">Caricamento dati utente...</Alert>
         )
-        
+
       )}
     </Box>
   );

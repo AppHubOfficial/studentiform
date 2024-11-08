@@ -3,12 +3,9 @@ import { Box, Typography, Divider, TextField, Slider, FormControl, MenuItem, Inp
 import Grid from '@mui/material/Grid2';
 import SearchIcon from '@mui/icons-material/Search';
 
-function SearchComponent({ handleChangeRoles, handleSearchInput }) {
+function SearchComponent({ handleChangeRoles, handleSearchInput, handleChangeDistance, valueDistance }) {
     const [value, setValue] = useState([0, 100]);
 
-    const handleChangeDistance = (event, newValue) => {
-        setValue(newValue);
-    };
     return (
         <>
             <Box className="searchContainer" sx={{ padding: 3 }}>
@@ -37,18 +34,14 @@ function SearchComponent({ handleChangeRoles, handleSearchInput }) {
                     <Grid item xs={12} sm={6}>
                         <Typography variant="body1">Cerca per distanza</Typography>
                         <Slider
-                            value={value}
-                            onChange={handleChangeDistance}
+                            value={valueDistance}
+                            onChange={(e, newValue) => handleChangeDistance(newValue)}
                             valueLabelDisplay="auto"
                             min={0}
                             max={100}
                             disableSwap
                         />
                     </Grid>
-
-                    {/*<Grid item xs={12} sm={6}>
-                        <TextField style={{ width: '70px' }} label="Età" variant="outlined" />
-                    </Grid>*/}
 
                     <Grid item xs={12} sm={6}>
                         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>

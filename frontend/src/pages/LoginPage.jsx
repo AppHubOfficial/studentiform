@@ -47,17 +47,22 @@ function LoginPage() {
 
     const handleCheckboxChange = (e) => {
         const { name, checked } = e.target;
-        if (name === 'school') setSchoolChecked(checked);
-        else if (name === 'work') setWorkChecked(checked);
+    
+        if (name === 'scuola') setSchoolChecked(checked);
+        else if (name === 'lavoro') setWorkChecked(checked);
+    
+        const arrayActivities = Array.isArray(formData.activities) ? formData.activities : [];
+    
         const updatedActivities = checked
-        ? [...formData.activities, name] // Aggiunge l'attività se selezionata
-        : formData.activities.filter(val => val !== name); // Rimuove l'attività se deselezionata
-
+            ? [...arrayActivities, name] 
+            : arrayActivities.filter(val => val !== name);
+    
         setFormData({
             ...formData,
-            activities: updatedActivities
+            activities: updatedActivities 
         });
     };
+    
 
     const handleSliderChange = (e, newValue) => {
         setDistance(newValue);
@@ -85,7 +90,7 @@ function LoginPage() {
 
         dataToSend.activities = {
             value: formData.activities || [],
-            required: true
+            required: false
         };
 
         try {
@@ -138,11 +143,11 @@ function LoginPage() {
                             <FormGroup key={field.name} sx={{ border: "1px solid #c2c2c2", padding: "15px", borderRadius: "4px" }}>
                                 <Typography sx={{ fontSize: "17px", marginBottom: "10px", color: "#5e5e5e" }} variant="p" component="p">Studi o lavori?</Typography>
                                 <FormControlLabel
-                                    control={<Checkbox checked={schoolChecked} onChange={handleCheckboxChange} name="school" />}
+                                    control={<Checkbox checked={schoolChecked} onChange={handleCheckboxChange} name="scuola" />}
                                     label="Studio"
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={workChecked} onChange={handleCheckboxChange} name="work" />}
+                                    control={<Checkbox checked={workChecked} onChange={handleCheckboxChange} name="lavoro" />}
                                     label="Lavoro"
                                 />
                             </FormGroup>
