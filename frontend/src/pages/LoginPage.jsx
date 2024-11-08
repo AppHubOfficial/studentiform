@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TextField, Button, Box, Link as MuiLink, Alert, Checkbox, FormControlLabel, FormGroup, Typography, Slider } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PrivacyPolicyDialog from './PrivacyPolicyDialog';
 
 import '../assets/styles/LoginPage.css';
 
@@ -10,6 +11,8 @@ function LoginPage() {
     const location = useLocation();
     const { type } = location.state || {};
     const [errorMessage, setErrorMessage] = useState("");
+    const [privacyDialogOpen, setPrivacyDialogOpen] = useState(false);
+    const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
 
     const text = type === 'login' ? "Non sei ancora registrato?" : "Hai già un account?";
 
@@ -21,9 +24,10 @@ function LoginPage() {
         { label: 'Numero di Telefono', name: 'tel', type: 'text', required: true, roles: ['studente', 'insegnante'] },
         { label: 'Università', name: 'university', type: 'text', required: false, roles: ['studente'] },
         { label: 'Facoltà', name: 'faculty', type: 'text', required: false, roles: ['studente'] },
+        { label: 'Lavoro', name: 'work', type: 'text', required: false, roles: ['studente'] },
         { label: 'Attività', name: 'activities', type: 'checkboxSchoolOrWork', required: false, roles: ['studente'] },
+        { label: 'Note', name: 'notes', type: 'text', required: false, roles: ['studente'] },
         { label: 'Quanto ti puoi spostare?', name: 'distance', type: 'slider', required: true, roles: ['studente'] }
-
     ];
 
     const filteredFields = formFields.filter(field => field.roles.includes(type));
@@ -47,22 +51,19 @@ function LoginPage() {
 
     const handleCheckboxChange = (e) => {
         const { name, checked } = e.target;
-    
         if (name === 'scuola') setSchoolChecked(checked);
         else if (name === 'lavoro') setWorkChecked(checked);
-    
+
         const arrayActivities = Array.isArray(formData.activities) ? formData.activities : [];
-    
         const updatedActivities = checked
             ? [...arrayActivities, name] 
             : arrayActivities.filter(val => val !== name);
-    
+
         setFormData({
             ...formData,
             activities: updatedActivities 
         });
     };
-
 
     const handleSliderChange = (e, newValue) => {
         setDistance(newValue);
@@ -75,6 +76,11 @@ function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!acceptedPrivacy) {
+            setErrorMessage("Devi accettare l'informativa sulla privacy per procedere.");
+            return;
+        }
+
         const dataToSend = filteredFields.reduce((acc, field) => {
             acc[field.name] = {
                 value: formData[field.name],
@@ -83,19 +89,12 @@ function LoginPage() {
             return acc;
         }, { type });
 
-        dataToSend.distance = {
-            value: distance,
-            required: true
-        };
-
-        dataToSend.activities = {
-            value: formData.activities || [],
-            required: false
-        };
+        dataToSend.distance = { value: distance, required: true };
+        dataToSend.activities = { value: formData.activities || [], required: false };
 
         const regex = /^\d+(\.\d+)?$/;
         if (regex.test(formData.tel) && formData.tel.length !== 10) {
-            setErrorMessage("Numero di telefono non valido")
+            setErrorMessage("Numero di telefono non valido");
             return;
         }
 
@@ -113,12 +112,25 @@ function LoginPage() {
                 setFormData(initialFormData);
                 navigate('/dashboard');
             } else {
-                console.log(data.error)
+                console.log(data.error);
                 setErrorMessage(data.error || 'Si è verificato un errore sconosciuto');
             }
         } catch (error) {
             console.error('Errore di rete:', error);
         }
+    };
+
+    const handleOpenPrivacyDialog = () => {
+        setPrivacyDialogOpen(true);
+    };
+
+    const handleClosePrivacyDialog = () => {
+        setPrivacyDialogOpen(false);
+    };
+
+    const handleAcceptPrivacy = () => {
+        setAcceptedPrivacy(true);
+        setPrivacyDialogOpen(false);
     };
 
     return (
@@ -139,7 +151,7 @@ function LoginPage() {
                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
             }}
         >
-            {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
+            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <ArrowBackIcon style={{ cursor: 'pointer' }} onClick={() => navigate('/')}></ArrowBackIcon>
 
             {filteredFields.map((field) => {
@@ -147,7 +159,7 @@ function LoginPage() {
                     case 'checkboxSchoolOrWork':
                         return (
                             <FormGroup key={field.name} sx={{ border: "1px solid #c2c2c2", padding: "15px", borderRadius: "4px" }}>
-                                <Typography sx={{ fontSize: "17px", marginBottom: "10px", color: "#5e5e5e" }} variant="p" component="p">Studi o lavori?</Typography>
+                                <Typography sx={{ fontSize: "17px", marginBottom: "10px", color: "#5e5e5e" }}>Studi o lavori?</Typography>
                                 <FormControlLabel
                                     control={<Checkbox checked={schoolChecked} onChange={handleCheckboxChange} name="scuola" />}
                                     label="Studio"
@@ -189,6 +201,18 @@ function LoginPage() {
                 }
             })}
 
+            <FormControlLabel
+                control={<Checkbox checked={acceptedPrivacy} onChange={(e) => setAcceptedPrivacy(e.target.checked)} />}
+                label={
+                    <Typography>
+                        Accetto l'informativa sulla privacy{' '}
+                        <MuiLink component="button" onClick={handleOpenPrivacyDialog}>
+                            (Leggi)
+                        </MuiLink>
+                    </Typography>
+                }
+            />
+
             <Button variant="contained" color="primary" type="submit" style={{ marginTop: '30px', marginBottom: "10px" }}>
                 Invia
             </Button>
@@ -196,6 +220,12 @@ function LoginPage() {
             <MuiLink to={type === 'login' ? '/' : '/login'} state={{ type: 'login' }} component={Link}>
                 {text + " Clicca qui"}
             </MuiLink>
+
+            <PrivacyPolicyDialog 
+                open={privacyDialogOpen} 
+                onClose={handleClosePrivacyDialog} 
+                onAccept={handleAcceptPrivacy} 
+            />
         </Box>
     );
 }

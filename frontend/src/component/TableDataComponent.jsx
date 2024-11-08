@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Paper, CircularProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { userData } from 'three/webgpu';
 
 function TableDataComponent({ usersData }) {
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
