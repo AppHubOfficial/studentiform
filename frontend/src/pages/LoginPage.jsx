@@ -24,7 +24,7 @@ function LoginPage() {
         { label: 'Università', name: 'university', type: 'text', required: false, roles: ['studente'], dependencies: ['school'] },
         { label: 'Facoltà', name: 'faculty', type: 'text', required: false, roles: ['studente'], dependencies: ['school'] },
         { label: 'Attività', name: 'activities', type: 'checkboxSchoolOrWork', required: true, roles: ['studente'] },
-        { label: 'Quanto ti puoi spostare?', name: 'distance', type: 'slider', required: true, roles: ['studente'], dependencies: ['work'] },
+        { label: 'Quanto ti puoi spostare?', name: 'distance', type: 'slider', required: true, roles: ['studente']},
         { label: 'Luogo di lavoro', name: 'work', type: 'text', required: false, roles: ['studente'], dependencies: ['work'] },
         { label: 'Note', name: 'note', type: 'text', required: false, roles: ['studente'] }
     ];
