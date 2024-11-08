@@ -158,12 +158,11 @@ function Dashboard() {
 
     fetchUserProfileData();
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      if (profileData) handleLogout();
+    }
   }, []);
-
-  useEffect(() => {
-
-  }, [profileData])
 
   return (
     <Box
