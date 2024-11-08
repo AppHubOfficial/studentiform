@@ -55,6 +55,13 @@ function Profilo() {
   const handleSubmitUpdate = async (e) => {
     e.preventDefault();
 
+    const regex = /^\d+(\.\d+)?$/;
+    if (regex.test(formData.tel) && formData.tel.length !== 10) {
+      setErrorTimeout(true)
+      setErrorMessage("Numero di telefono non valido")
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:5000/api/users/editProfileData', {
         method: 'POST',
@@ -147,6 +154,12 @@ function Profilo() {
 
       }}
     >
+      {errorMessage ? (
+        <Alert
+          className='info'
+          severity="error">{errorMessage}
+        </Alert>
+      ) : null}
       <Snackbar
         open={openPopup}
         autoHideDuration={3000}

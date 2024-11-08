@@ -62,7 +62,7 @@ function LoginPage() {
             activities: updatedActivities 
         });
     };
-    
+
 
     const handleSliderChange = (e, newValue) => {
         setDistance(newValue);
@@ -92,6 +92,12 @@ function LoginPage() {
             value: formData.activities || [],
             required: false
         };
+
+        const regex = /^\d+(\.\d+)?$/;
+        if (regex.test(formData.tel) && formData.tel.length !== 10) {
+            setErrorMessage("Numero di telefono non valido")
+            return;
+        }
 
         try {
             const response = await fetch(`http://localhost:5000/api/users/${type === 'login' ? 'login' : 'create-user'}`, {
