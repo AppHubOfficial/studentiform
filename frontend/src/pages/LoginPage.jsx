@@ -24,7 +24,7 @@ function LoginPage() {
         { label: 'Università', name: 'university', type: 'text', required: false, roles: ['studente'], dependencies: ['school'] },
         { label: 'Facoltà', name: 'faculty', type: 'text', required: false, roles: ['studente'], dependencies: ['school'] },
         { label: 'Attività', name: 'activities', type: 'checkboxSchoolOrWork', required: true, roles: ['studente'] },
-        { label: 'Quanto ti puoi spostare?', name: 'distance', type: 'slider', required: true, roles: ['studente']},
+        { label: 'Quanto ti puoi spostare?', name: 'distance', type: 'slider', required: true, roles: ['studente'] },
         { label: 'Luogo di lavoro', name: 'work', type: 'text', required: false, roles: ['studente'], dependencies: ['work'] },
         { label: 'Note', name: 'note', type: 'text', required: false, roles: ['studente'] }
     ];
@@ -80,8 +80,13 @@ function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!acceptedPrivacy) {
+        if (!acceptedPrivacy && type !== 'login') {
             setErrorMessage("Devi accettare l'informativa sulla privacy.");
+            return;
+        }
+
+        if (!schoolChecked && !workChecked && type !== 'login') {
+            setErrorMessage("Campo scuola/lavoro non compilato");
             return;
         }
 
@@ -108,6 +113,8 @@ function LoginPage() {
             setErrorMessage("Numero di telefono non valido");
             return;
         }
+
+        console.log(dataToSend)
 
         try {
             const response = await fetch(`http://localhost:5000/api/users/${type === 'login' ? 'login' : 'create-user'}`, {
@@ -145,18 +152,17 @@ function LoginPage() {
                 width: '400px',
                 margin: 'auto',
                 position: 'relative',
-                top: '100px',
+                top: '32px',
                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                marginBottom: '100px',
             }}
         >
             {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
             <ArrowBackIcon style={{ cursor: 'pointer' }} onClick={() => navigate('/')}></ArrowBackIcon>
 
             {filteredFields.map((field) => {
-                // Verifica se le dipendenze sono soddisfatte
                 const isDependencyMet = !field.dependencies || field.dependencies.every(dep => (dep === 'school' ? schoolChecked : workChecked));
 
-                // Se le dipendenze non sono soddisfatte, non mostrare il campo
                 if (!isDependencyMet) return null;
 
                 switch (field.type) {
@@ -205,19 +211,22 @@ function LoginPage() {
                 }
             })}
 
-            <FormControlLabel
-                control={
-                    <Checkbox
-                        checked={acceptedPrivacy}
-                        onChange={(e) => setAcceptedPrivacy(e.target.checked)}
-                    />
-                }
-                label={
-                    <Typography>
-                        Ho letto e accetto <MuiLink onClick={() => setPrivacyOpen(true)} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>l'informativa sulla privacy</MuiLink>.
-                    </Typography>
-                }
-            />
+            {(type !== 'login' && (
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={acceptedPrivacy}
+                            onChange={(e) => setAcceptedPrivacy(e.target.checked)}
+                            sx={{ width: '40px' }}
+                        />
+                    }
+                    label={
+                        <Typography>
+                            Ho letto e accetto <MuiLink onClick={() => setPrivacyOpen(true)} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>l'informativa sulla privacy</MuiLink>.
+                        </Typography>
+                    }
+                />
+            ))}
 
 
             <Button variant="contained" color="primary" type="submit" style={{ marginTop: '30px', marginBottom: "10px" }}>
@@ -227,6 +236,11 @@ function LoginPage() {
             <MuiLink to={type === 'login' ? '/' : '/login'} state={{ type: 'login' }} component={Link}>
                 {text + " Clicca qui"}
             </MuiLink>
+
+            {privacyOpen && (
+                <PrivacyPolicyDialog></PrivacyPolicyDialog>
+            )}
+
         </Box>
     );
 }

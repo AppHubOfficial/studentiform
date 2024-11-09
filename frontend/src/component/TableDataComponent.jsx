@@ -5,21 +5,21 @@ import { DataGrid } from '@mui/x-data-grid';
 function TableDataComponent({ usersData }) {
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
 
-    console.log(usersData)
+    //console.log(usersData)
 
     usersData?.forEach((el) => {
         if (typeof el.activities === 'string') {
             try {
                 el.activities = JSON.parse(el.activities);
             } catch (error) {
-                console.error("Errore nel parsing di activities:", error);
+                //console.error("Errore nel parsing di activities:", error);
             }
         }
     
         if (Array.isArray(el.activities)) {
             el.activities = el.activities.join(', ');
         }
-        console.log(el.activities);
+        //console.log(el.activities);
     });
     
 
@@ -31,7 +31,9 @@ function TableDataComponent({ usersData }) {
         { field: 'university', headerName: 'Università', width: 130 },
         { field: 'distance', headerName: 'Distanza', width: 130 },
         { field: 'activities', headerName: 'Attività', width: 130 },
+        { field: 'work', headerName: 'Luogo di lavoro', width: 150 },
         { field: 'faculty', headerName: 'Facoltà', width: 130 },
+        { field: 'note', headerName: 'Note', width: 150 },
         {
             field: 'created_at',
             headerName: 'Creato il giorno',

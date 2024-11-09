@@ -24,13 +24,15 @@ function Profilo() {
     university: "",
     faculty: "",
     distance: "",
+    work: "",
     activities: [],
+    note: "",
   });
 
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return; // Ignora il clickaway
-    }
+    // if (reason === 'clickaway') {
+    //   return; // Ignora il clickaway
+    // }
     setOpenPopup(false);
   };
 
@@ -105,6 +107,7 @@ function Profilo() {
           const data = await response.json();
           const userData = data[0] || {};
           setProfileData(userData);
+          console.log(userData)
           setFormData({
             nome: userData.nome || "",
             email: userData.email || "",
@@ -114,6 +117,8 @@ function Profilo() {
             faculty: userData.faculty || "",
             distance: userData.distance || "",
             activities: userData.activities || [],
+            note: userData.note || "",
+            work: userData.work || "",
           });
         } else {
           console.error(`Errore in getProfileData: ${response.status}`);
@@ -148,18 +153,21 @@ function Profilo() {
         width: "90%",
         ...(profileData?.type === "studente" && {
           position: 'relative',
-          top: '150px',
-          marginBottom: "370px !important",
+          top: '240px',
+          marginBottom: "550px !important",
         }),
-
+        ...(profileData?.type === "insegnante" && {
+          marginBottom: '100px !important',
+          marginTop: '30px !important'
+        }),
       }}
     >
-      {errorMessage ? (
+      {errorMessage && (
         <Alert
           className='info'
           severity="error">{errorMessage}
         </Alert>
-      ) : null}
+      )}
       <Snackbar
         open={openPopup}
         autoHideDuration={3000}
@@ -177,7 +185,7 @@ function Profilo() {
       </Snackbar>
       {profileData ? (
         <>
-          <ArrowBackIcon style={{ fontSize: '35px', marginTop: "50px" }} onClick={() => navigate('/dashboard')} />
+          <ArrowBackIcon style={{ fontSize: '35px', marginTop: "50px", cursor: "pointer", }} onClick={() => navigate('/dashboard')} />
 
           <Box
             component="form"
@@ -230,8 +238,18 @@ function Profilo() {
                       <TextField disabled value={formData.type} />
                     </TableCell>
                   </TableRow>
+                  <TableRow>
+                    <TableCell>Note</TableCell>
+                    <TableCell>
+                      <TextField
+                        value={formData.note}
+                        onChange={handleInputChange}
+                        name='note'
+                      />
+                    </TableCell>
+                  </TableRow>
 
-                  {profileData.type === "studente" ? (
+                  {profileData.type === "studente" && (
                     <>
                       <TableRow>
                         <TableCell>Università</TableCell>
@@ -264,6 +282,16 @@ function Profilo() {
                         </TableCell>
                       </TableRow>
                       <TableRow>
+                        <TableCell>Luogo di lavoro</TableCell>
+                        <TableCell>
+                          <TextField
+                            name="work"
+                            onChange={handleInputChange}
+                            value={formData.work}
+                          />
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
                         <TableCell>Attività</TableCell>
                         <TableCell>
                           <FormControlLabel
@@ -291,7 +319,7 @@ function Profilo() {
                         </TableCell>
                       </TableRow>
                     </>
-                  ) : (null)}
+                  )}
 
                   <TableRow>
                     <TableCell>Account creato il</TableCell>
@@ -302,14 +330,14 @@ function Profilo() {
                 </TableBody>
               </Table>
             </Paper>
-            <Button variant="contained" sx={{ marginTop: "10px", width: "80%", maxWidth: "500px" }} type="submit">Modifica</Button>
+            <Button variant="contained" sx={{ marginTop: "10px", width: "80%", maxWidth: "500px" }} type="submit">Salva modifiche</Button>
           </Box>
         </>
       ) : (
         errorTimeout ? (
           <Alert
             className='info'
-            severity="error">{errorMessage}
+            severity="error">{errorMessage},
           </Alert>
         ) : (
           <Alert className='info' severity="info">Caricamento dati utente...</Alert>
