@@ -212,20 +212,24 @@ function LoginPage() {
             })}
 
             {(type !== 'login' && (
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={acceptedPrivacy}
-                            onChange={(e) => setAcceptedPrivacy(e.target.checked)}
-                            sx={{ width: '40px' }}
-                        />
-                    }
-                    label={
-                        <Typography>
+                
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={acceptedPrivacy}
+                                onChange={(e) => setAcceptedPrivacy(e.target.checked)}
+                                sx={{ width: '40px' }}
+                            />
+                        }
+                        label={<Typography>
                             Ho letto e accetto <MuiLink onClick={() => setPrivacyOpen(true)} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>l'informativa sulla privacy</MuiLink>.
                         </Typography>
-                    }
-                />
+                        }
+
+                    />
+
+                    
+                
             ))}
 
 
@@ -238,7 +242,7 @@ function LoginPage() {
             </MuiLink>
 
             {privacyOpen && (
-                <PrivacyPolicyDialog></PrivacyPolicyDialog>
+                <PrivacyPolicyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
             )}
 
         </Box>
