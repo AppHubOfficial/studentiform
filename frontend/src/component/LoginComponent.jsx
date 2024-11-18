@@ -7,7 +7,7 @@ import PrivacyPolicyDialog from '../pages/PrivacyPolicyDialog';
 
 import '../assets/styles/LoginPage.css';
 
-function LoginPage({type}) {
+function LoginComponent({ type, setLoginOpen, setLoginType }) {
     const navigate = useNavigate();
     const location = useLocation();
     const [errorMessage, setErrorMessage] = useState("");
@@ -84,10 +84,10 @@ function LoginPage({type}) {
             return;
         }
 
-        if (!schoolChecked && !workChecked && type !== 'login' && type !== 'insegnante') {
-            setErrorMessage("Campo scuola/lavoro non compilato");
-            return;
-        }
+        // if (!schoolChecked && !workChecked && type !== 'login' && type !== 'insegnante') {
+        //     setErrorMessage("Campo scuola/lavoro non compilato");
+        //     return;
+        // }
 
         const dataToSend = filteredFields.reduce((acc, field) => {
             acc[field.name] = {
@@ -150,10 +150,17 @@ function LoginPage({type}) {
                 borderRadius: '15px',
                 width: '400px',
                 margin: 'auto',
+                ...(type === 'studente' && { height: '100vh' }),
                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                overflowY: 'auto',
             }}
         >
             {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
+            <ArrowBackIcon style={{ cursor: 'pointer' }}
+                onClick={() => {
+                    setLoginOpen(false);
+                    setLoginType('');
+                }}></ArrowBackIcon>
 
             {filteredFields.map((field) => {
                 const isDependencyMet = !field.dependencies || field.dependencies.every(dep => (dep === 'school' ? schoolChecked : workChecked));
@@ -207,28 +214,28 @@ function LoginPage({type}) {
             })}
 
             {(type !== 'login' && (
-                
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={acceptedPrivacy}
-                                onChange={(e) => setAcceptedPrivacy(e.target.checked)}
-                                sx={{ width: '40px' }}
-                            />
-                        }
-                        label={<Typography>
-                            Ho letto e accetto <MuiLink onClick={() => setPrivacyOpen(true)} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>l'informativa sulla privacy</MuiLink>.
-                        </Typography>
-                        }
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={acceptedPrivacy}
+                            onChange={(e) => setAcceptedPrivacy(e.target.checked)}
+                            sx={{ width: '40px' }}
+                        />
+                    }
+                    label={<Typography>
+                        Ho letto e accetto <MuiLink onClick={() => setPrivacyOpen(true)} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>l'informativa sulla privacy</MuiLink>.
+                    </Typography>
+                    }
 
-                    />
-
-                    
-                
+                />
             ))}
 
 
-            <Button variant="contained" color="primary" type="submit" style={{ marginTop: '30px', marginBottom: "10px" }}>
+            <Button variant="contained" color="primary" type="submit"
+                style={{
+                    marginTop: '30px',
+                    ...(type === 'studente' && { marginBottom: '50px' })
+                }}>
                 Invia
             </Button>
 
@@ -244,4 +251,4 @@ function LoginPage({type}) {
     );
 }
 
-export default LoginPage;
+export default LoginComponent;

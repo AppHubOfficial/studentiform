@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Button, Box, Typography, Modal } from '@mui/material';
-import LoginPage from '../component/LoginPage';
+import LoginComponent from '../component/LoginComponent';
 import background from '../assets/images/programmers.png';
 
 function Home() {
@@ -52,6 +52,7 @@ function Home() {
           textAlign: 'center',
           backdropFilter: 'brightness(0.8)',
           padding: '20px',
+          overflowY: 'auto',
         }}
       >
         <Typography variant="h3" component="h1" gutterBottom>
@@ -108,7 +109,7 @@ function Home() {
           justifyContent: 'center',
         }}
       >
-          <LoginPage type={loginType} />
+          <LoginComponent type={loginType} setLoginOpen={setLoginOpen} setLoginType={setLoginType} />
       </Modal>
     </Box>
   );
