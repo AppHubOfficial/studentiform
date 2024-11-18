@@ -1,13 +1,20 @@
-import React from 'react';
-import { AppBar, Toolbar, Button, Box, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import background from '../assets/images/programmers.png'; // Import dell'immagine
+import React, { useState } from 'react';
+import { AppBar, Toolbar, Button, Box, Typography, Modal } from '@mui/material';
+import LoginPage from '../component/LoginPage';
+import background from '../assets/images/programmers.png';
 
 function Home() {
-  const navigate = useNavigate();
+  const [isLoginOpen, setLoginOpen] = useState(false);
+  const [loginType, setLoginType] = useState('');
 
-  const handleClick = (type) => {
-    navigate('/login', { state: { type } });
+  const handleOpenLogin = (type) => {
+    setLoginType(type);
+    setLoginOpen(true); 
+  };
+
+  const handleCloseLogin = () => {
+    setLoginOpen(false);
+    setLoginType('');
   };
 
   return (
@@ -16,27 +23,25 @@ function Home() {
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        backgroundImage: `url(${background})`, // Usa l'immagine importata
+        backgroundImage: `url(${background})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         color: '#ffffff',
       }}
     >
-      {/* Navbar */}
       <AppBar position="static" sx={{ backgroundColor: '#333333' }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
             EduPlatform
           </Typography>
           <Box>
-            <Button color="inherit" onClick={() => handleClick('login')}>
+            <Button color="inherit" onClick={() => handleOpenLogin('login')}>
               Accedi
             </Button>
           </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Contenuto principale */}
       <Box
         sx={{
           flexGrow: 1,
@@ -60,7 +65,7 @@ function Home() {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => handleClick('studente')}
+            onClick={() => handleOpenLogin('studente')}
             sx={{ paddingX: 3 }}
           >
             Sono uno Studente
@@ -68,7 +73,7 @@ function Home() {
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => handleClick('insegnante')}
+            onClick={() => handleOpenLogin('insegnante')}
             sx={{ paddingX: 3 }}
           >
             Sono un Insegnante
@@ -80,7 +85,7 @@ function Home() {
         </Typography>
         <Button
           variant="contained"
-          onClick={() => handleClick('login')}
+          onClick={() => handleOpenLogin('login')}
           sx={{
             backgroundColor: '#00b11e',
             color: '#ffffff',
@@ -91,6 +96,20 @@ function Home() {
           Login
         </Button>
       </Box>
+
+      <Modal
+        open={isLoginOpen}
+        onClose={handleCloseLogin}
+        aria-labelledby="login-modal-title"
+        aria-describedby="login-modal-description"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+          <LoginPage type={loginType} />
+      </Modal>
     </Box>
   );
 }

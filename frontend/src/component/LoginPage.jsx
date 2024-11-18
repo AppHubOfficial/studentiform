@@ -3,14 +3,13 @@ import { TextField, Button, Box, Link as MuiLink, Alert, Checkbox, FormControlLa
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-import PrivacyPolicyDialog from './PrivacyPolicyDialog';
+import PrivacyPolicyDialog from '../pages/PrivacyPolicyDialog';
 
 import '../assets/styles/LoginPage.css';
 
-function LoginPage() {
+function LoginPage({type}) {
     const navigate = useNavigate();
     const location = useLocation();
-    const { type } = location.state || {};
     const [errorMessage, setErrorMessage] = useState("");
 
     const text = type === 'login' ? "Non sei ancora registrato?" : "Hai già un account?";
@@ -151,14 +150,10 @@ function LoginPage() {
                 borderRadius: '15px',
                 width: '400px',
                 margin: 'auto',
-                position: 'relative',
-                top: '32px',
                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-                marginBottom: '100px',
             }}
         >
             {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
-            <ArrowBackIcon style={{ cursor: 'pointer' }} onClick={() => navigate('/')}></ArrowBackIcon>
 
             {filteredFields.map((field) => {
                 const isDependencyMet = !field.dependencies || field.dependencies.every(dep => (dep === 'school' ? schoolChecked : workChecked));
