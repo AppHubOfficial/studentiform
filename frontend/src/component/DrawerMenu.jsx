@@ -13,7 +13,7 @@ const DrawerMenu = ({ open, toggleDrawer, handleLogout }) => {
             <List>
                 {[ 
                     { text: 'Profilo', icon: <AccountBoxIcon />, path: '/profilo' },
-                    { text: 'Impostazioni', icon: <SettingsIcon />, path: '/impostazioni' }
+                    //{ text: 'Impostazioni', icon: <SettingsIcon />, path: '/impostazioni' }
                 ].map(({ text, icon, path }) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton onClick={() => navigate(path)}>

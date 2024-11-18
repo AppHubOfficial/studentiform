@@ -153,12 +153,11 @@ function Profilo() {
         width: "90%",
         ...(profileData?.type === "studente" && {
           position: 'relative',
-          top: '240px',
-          marginBottom: "550px !important",
+          top: '160px',
+          marginBottom: "450px !important",
         }),
         ...(profileData?.type === "insegnante" && {
-          marginBottom: '100px !important',
-          marginTop: '30px !important'
+          marginTop: '-30px !important'
         }),
       }}
     >
