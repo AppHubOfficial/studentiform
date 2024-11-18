@@ -32,12 +32,6 @@ function Home() {
             <Button color="inherit" onClick={() => handleClick('login')}>
               Accedi
             </Button>
-            <Button color="inherit" onClick={() => navigate('/students')}>
-              Studenti
-            </Button>
-            <Button color="inherit" onClick={() => navigate('/teachers')}>
-              Insegnanti
-            </Button>
           </Box>
         </Toolbar>
       </AppBar>
