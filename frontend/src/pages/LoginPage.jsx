@@ -85,7 +85,7 @@ function LoginPage() {
             return;
         }
 
-        if (!schoolChecked && !workChecked && type !== 'login') {
+        if (!schoolChecked && !workChecked && type !== 'login' && type !== 'insegnante') {
             setErrorMessage("Campo scuola/lavoro non compilato");
             return;
         }
