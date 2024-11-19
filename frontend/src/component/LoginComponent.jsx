@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Link as MuiLink, Alert, Checkbox, FormControlLabel, FormGroup, Typography, Slider } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
+
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import PrivacyPolicyDialog from '../pages/PrivacyPolicyDialog';
@@ -12,6 +15,13 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
     const location = useLocation();
     const [errorMessage, setErrorMessage] = useState("");
 
+    const loginAnimation = {
+        hidden: { opacity: 1, scale: 0.1 },
+        visible: { opacity: 1, scale: 1, transition: { duration: 0.25, ease: 'easeOut' } },
+        exit: { opacity: 0, scale: 0, transition: { duration: 0.25, ease: 'easeIn' } },
+    };
+
+
     const text = type === 'login' ? "Non sei ancora registrato?" : "Hai già un account?";
 
     const formFields = [
@@ -20,9 +30,9 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
         { label: 'Email', name: 'email', type: 'email', required: true, roles: ['login', 'studente', 'insegnante'] },
         { label: 'Password', name: 'password', type: 'password', required: true, roles: ['login', 'studente', 'insegnante'] },
         { label: 'Numero di Telefono', name: 'tel', type: 'text', required: true, roles: ['studente', 'insegnante'] },
+        { label: 'Attività', name: 'activities', type: 'checkboxSchoolOrWork', required: true, roles: ['studente'] },
         { label: 'Università', name: 'university', type: 'text', required: false, roles: ['studente'], dependencies: ['school'] },
         { label: 'Facoltà', name: 'faculty', type: 'text', required: false, roles: ['studente'], dependencies: ['school'] },
-        { label: 'Attività', name: 'activities', type: 'checkboxSchoolOrWork', required: true, roles: ['studente'] },
         { label: 'Quanto ti puoi spostare?', name: 'distance', type: 'slider', required: true, roles: ['studente'] },
         { label: 'Luogo di lavoro', name: 'work', type: 'text', required: false, roles: ['studente'], dependencies: ['work'] },
         { label: 'Note', name: 'note', type: 'text', required: false, roles: ['studente'] }
@@ -138,116 +148,121 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
     };
 
     return (
-        <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
-                backgroundColor: 'white',
-                padding: '40px',
-                borderRadius: '15px',
-                width: '400px',
-                margin: 'auto',
-                ...(type === 'studente' && { height: '100vh' }),
-                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-                overflowY: 'auto',
-            }}
-        >
-            {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
-            <ArrowBackIcon style={{ cursor: 'pointer' }}
-                onClick={() => {
-                    setLoginOpen(false);
-                    setLoginType('');
-                }}></ArrowBackIcon>
+        <AnimatePresence>
+            <motion.div
+                variants={loginAnimation}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+            >
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                        backgroundColor: 'white',
+                        padding: '40px',
+                        borderRadius: '15px',
+                        width: '400px',
+                        margin: 'auto',
+                        ...(type === 'studente' && { height: '86vh' }),
+                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                        overflowY: 'auto',
+                    }}
+                >
+                    {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
+                    <ArrowBackIcon style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                            setLoginOpen(false);
+                            setLoginType('');
+                        }}></ArrowBackIcon>
 
-            {filteredFields.map((field) => {
-                const isDependencyMet = !field.dependencies || field.dependencies.every(dep => (dep === 'school' ? schoolChecked : workChecked));
+                    {filteredFields.map((field) => {
+                        const isDependencyMet = !field.dependencies || field.dependencies.every(dep => (dep === 'school' ? schoolChecked : workChecked));
 
-                if (!isDependencyMet) return null;
+                        if (!isDependencyMet) return null;
 
-                switch (field.type) {
-                    case 'checkboxSchoolOrWork':
-                        return (
-                            <FormGroup key={field.name} sx={{ border: "1px solid #c2c2c2", padding: "15px", borderRadius: "4px" }}>
-                                <Typography sx={{ fontSize: "17px", marginBottom: "10px", color: "#5e5e5e" }} variant="p" component="p">Studi o lavori?*</Typography>
-                                <FormControlLabel
-                                    control={<Checkbox checked={schoolChecked} onChange={handleCheckboxChange} name="scuola" />}
-                                    label="Studio"
+                        switch (field.type) {
+                            case 'checkboxSchoolOrWork':
+                                return (
+                                    <FormGroup key={field.name} sx={{ border: "1px solid #c2c2c2", padding: "15px", borderRadius: "4px" }}>
+                                        <Typography sx={{ fontSize: "17px", marginBottom: "10px", color: "#5e5e5e" }} variant="p" component="p">Studi o lavori?*</Typography>
+                                        <FormControlLabel
+                                            control={<Checkbox checked={schoolChecked} onChange={handleCheckboxChange} name="scuola" />}
+                                            label="Studio"
+                                        />
+                                        <FormControlLabel
+                                            control={<Checkbox checked={workChecked} onChange={handleCheckboxChange} name="lavoro" />}
+                                            label="Lavoro"
+                                        />
+                                    </FormGroup>
+                                );
+                            case 'slider':
+                                return (
+                                    <Box key={field.name} sx={{ display: 'flex', flexDirection: 'column' }}>
+                                        <Typography id="input-slider" gutterBottom>
+                                            {field.label} {distance}km
+                                        </Typography>
+                                        <Slider
+                                            value={distance}
+                                            onChange={handleSliderChange}
+                                            aria-labelledby="input-slider"
+                                            min={0}
+                                            max={100}
+                                        />
+                                    </Box>
+                                );
+                            default:
+                                return (
+                                    <TextField
+                                        key={field.name}
+                                        label={field.label}
+                                        name={field.name}
+                                        type={field.type}
+                                        value={formData[field.name]}
+                                        onChange={handleChange}
+                                        variant="outlined"
+                                        required={field.required}
+                                    />
+                                );
+                        }
+                    })}
+
+                    {(type !== 'login' && (
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={acceptedPrivacy}
+                                    onChange={(e) => setAcceptedPrivacy(e.target.checked)}
+                                    sx={{ width: '40px' }}
                                 />
-                                <FormControlLabel
-                                    control={<Checkbox checked={workChecked} onChange={handleCheckboxChange} name="lavoro" />}
-                                    label="Lavoro"
-                                />
-                            </FormGroup>
-                        );
-                    case 'slider':
-                        return (
-                            <Box key={field.name} sx={{ display: 'flex', flexDirection: 'column' }}>
-                                <Typography id="input-slider" gutterBottom>
-                                    {field.label} {distance}km
-                                </Typography>
-                                <Slider
-                                    value={distance}
-                                    onChange={handleSliderChange}
-                                    aria-labelledby="input-slider"
-                                    min={0}
-                                    max={100}
-                                />
-                            </Box>
-                        );
-                    default:
-                        return (
-                            <TextField
-                                key={field.name}
-                                label={field.label}
-                                name={field.name}
-                                type={field.type}
-                                value={formData[field.name]}
-                                onChange={handleChange}
-                                variant="outlined"
-                                required={field.required}
-                            />
-                        );
-                }
-            })}
+                            }
+                            label={<Typography>
+                                Ho letto e accetto <MuiLink onClick={() => setPrivacyOpen(true)} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>l'informativa sulla privacy</MuiLink>.
+                            </Typography>
+                            }
 
-            {(type !== 'login' && (
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={acceptedPrivacy}
-                            onChange={(e) => setAcceptedPrivacy(e.target.checked)}
-                            sx={{ width: '40px' }}
                         />
-                    }
-                    label={<Typography>
-                        Ho letto e accetto <MuiLink onClick={() => setPrivacyOpen(true)} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>l'informativa sulla privacy</MuiLink>.
-                    </Typography>
-                    }
-
-                />
-            ))}
+                    ))}
 
 
-            <Button variant="contained" color="primary" type="submit"
-                style={{
-                    marginTop: '30px',
-                    ...(type === 'studente' && { marginBottom: '50px' })
-                }}>
-                Invia
-            </Button>
+                    <Button variant="contained" color="primary" type="submit"
+                        style={{
+                            marginTop: '30px',
+                            ...(type === 'studente' && { marginBottom: '20px' })
+                        }}>
+                        Invia
+                    </Button>
 
-            <MuiLink to={type === 'login' ? '/' : '/login'} state={{ type: 'login' }} component={Link}>
-                {text + " Clicca qui"}
-            </MuiLink>
+                    {privacyOpen && (
+                        <PrivacyPolicyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
+                    )}
 
-            {privacyOpen && (
-                <PrivacyPolicyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
-            )}
-
-        </Box>
+                </Box>
+            </motion.div>
+        </AnimatePresence>
     );
 }
 

@@ -31,13 +31,13 @@ function Home() {
     >
       <AppBar position="static" sx={{ backgroundColor: '#333333' }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', cursor: 'pointer' }}>
             EduPlatform
           </Typography>
           <Box>
-            <Button color="inherit" onClick={() => handleOpenLogin('login')}>
+            {/* <Button color="inherit" onClick={() => handleOpenLogin('login')}>
               Accedi
-            </Button>
+            </Button> */}
           </Box>
         </Toolbar>
       </AppBar>
