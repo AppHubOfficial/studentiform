@@ -29,18 +29,15 @@ function Home() {
         color: '#ffffff',
       }}
     >
-      <AppBar position="static" sx={{ backgroundColor: '#333333' }}>
+      {/* <AppBar position="static" sx={{ backgroundColor: '#333333' }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="h6" sx={{ fontWeight: 'bold', cursor: 'pointer' }}>
             EduPlatform
           </Typography>
           <Box>
-            {/* <Button color="inherit" onClick={() => handleOpenLogin('login')}>
-              Accedi
-            </Button> */}
           </Box>
         </Toolbar>
-      </AppBar>
+      </AppBar> */}
 
       <Box
         sx={{
@@ -67,7 +64,7 @@ function Home() {
             variant="contained"
             color="primary"
             onClick={() => handleOpenLogin('studente')}
-            sx={{ paddingX: 3 }}
+            sx={{ paddingX: 3, padding: '13px' }}
           >
             Sono uno Studente
           </Button>
@@ -75,7 +72,7 @@ function Home() {
             variant="contained"
             color="secondary"
             onClick={() => handleOpenLogin('insegnante')}
-            sx={{ paddingX: 3 }}
+            sx={{ paddingX: 3, padding: '13px' }}
           >
             Sono un Insegnante
           </Button>
@@ -93,6 +90,7 @@ function Home() {
             mt: 1,
             paddingX: 3,
           }}
+          style={{ padding: '13px' }}
         >
           Login
         </Button>

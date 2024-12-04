@@ -19,7 +19,10 @@ function TableDataComponent({ usersData }) {
         if (Array.isArray(el.activities)) {
             el.activities = el.activities.join(', ');
         }
-        //console.log(el.activities);
+        
+        if (el.ripetizioni !== undefined && el.ripetizioni !== null) {
+            el.ripetizioni = el.ripetizioni ? "Sì" : "No";
+        }
     });
     
 
@@ -33,6 +36,7 @@ function TableDataComponent({ usersData }) {
         { field: 'activities', headerName: 'Attività', width: 130 },
         { field: 'work', headerName: 'Luogo di lavoro', width: 150 },
         { field: 'faculty', headerName: 'Facoltà', width: 130 },
+        { field: 'ripetizioni', headerName: 'Ripetizioni', width: 130 },
         { field: 'note', headerName: 'Note', width: 150 },
         {
             field: 'created_at',

@@ -45,12 +45,12 @@ function Dashboard() {
   useEffect(() => {
     let filteredUsersData = tempUsersData;
 
-    if (textSearchInput.trim() !== "") {
+    if (textSearchInput.trim().toLowerCase() !== "") {
       filteredUsersData = filteredUsersData.filter(user => {
         return (
-          user.nome.includes(textSearchInput) ||
-          user.email.includes(textSearchInput) ||
-          user.tel.includes(textSearchInput)
+          user.nome.toLowerCase().includes(textSearchInput) ||
+          user.email.toLowerCase().includes(textSearchInput) ||
+          user.tel.toLowerCase().includes(textSearchInput)
         );
       });
     }

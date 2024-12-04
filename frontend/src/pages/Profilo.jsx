@@ -12,6 +12,8 @@ function Profilo() {
 
   const [openPopup, setOpenPopup] = React.useState(false);
 
+  const [ripetizioni, setRipetizioni] = useState(false);
+
   const [errorTimeout, setErrorTimeout] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const TIMEOUT = 6000;
@@ -27,6 +29,7 @@ function Profilo() {
     work: "",
     activities: [],
     note: "",
+    ripetizioni: false,
   });
 
   const handleClose = (event, reason) => {
@@ -53,6 +56,15 @@ function Profilo() {
       }));
     }
   };
+
+  const checkboxRipetizioni = (e) => {
+    const { name, checked } = e.target;
+    setRipetizioni(checked)
+    setFormData({
+      ...formData,
+      ripetizioni: checked
+    });
+  }
 
   const handleSubmitUpdate = async (e) => {
     e.preventDefault();
@@ -119,6 +131,7 @@ function Profilo() {
             activities: userData.activities || [],
             note: userData.note || "",
             work: userData.work || "",
+            ripetizioni: userData.ripetizioni || false,
           });
         } else {
           console.error(`Errore in getProfileData: ${response.status}`);
@@ -153,11 +166,13 @@ function Profilo() {
         width: "90%",
         ...(profileData?.type === "studente" && {
           position: 'relative',
-          top: '160px',
+          top: '70px',
+          marginTop: '210px',
           marginBottom: "450px !important",
         }),
         ...(profileData?.type === "insegnante" && {
-          marginTop: '-30px !important'
+          marginTop: '30px !important',
+          marginBottom: '90px !important'
         }),
       }}
     >
@@ -288,6 +303,12 @@ function Profilo() {
                             onChange={handleInputChange}
                             value={formData.work}
                           />
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Posso dare ripetizioni</TableCell>
+                        <TableCell display="flex" alignItems="center">
+                          <Checkbox onChange={checkboxRipetizioni} checked={formData.ripetizioni} />
                         </TableCell>
                       </TableRow>
                       <TableRow>

@@ -25,6 +25,9 @@ router.post('/create-user', async (req, res) => {
   const activities = fields.activities?.value;
   const work = fields.work?.value;
   const note = fields.note?.value;
+  const ripetizioni = fields.ripetizioni?.value;
+
+  console.log(ripetizioni)
 
   try {
     const saltRounds = 10;
@@ -45,6 +48,7 @@ router.post('/create-user', async (req, res) => {
           activities,
           work,
           note,
+          ripetizioni,
           created_at: new Date()
         }
       ]);
@@ -141,7 +145,7 @@ router.post('/getProfileData', async (req, res) => {
 
   const { data, error } = await supabase
     .from('users')
-    .select('id, nome, email, tel, type, university, faculty, activities, distance, work, note, created_at')
+    .select('id, nome, email, tel, type, university, faculty, activities, distance, work, ripetizioni, note, created_at')
     .eq('email', email);
 
   if (error) {
@@ -169,7 +173,7 @@ router.post('/getUsersData', async (req, res) => {
 
   const { data, error } = await supabase
     .from('users')
-    .select('nome, email, tel, type, university, faculty, activities, distance, work, note, created_at');
+    .select('nome, email, tel, type, university, faculty, activities, distance, work, note, ripetizioni, created_at');
 
   if (error) {
     console.error('Errore nel recupero dei dati:', error);
@@ -188,11 +192,11 @@ router.post('/editProfileData', async (req, res) => {
     return res.status(401).json({ error: 'Not authenticated' });
   }
 
-  const { nome, tel, type, university, faculty, activities, distance, note, work } = req.body;
+  const { nome, tel, type, university, faculty, activities, distance, note, work, ripetizioni } = req.body;
 
   const { data, error } = await supabase
     .from('users')
-    .update({ nome, tel, type, university, faculty, activities, distance, note, work })
+    .update({ nome, tel, type, university, faculty, activities, distance, note, work, ripetizioni })
     .eq('email', email);
 
   if (error) {

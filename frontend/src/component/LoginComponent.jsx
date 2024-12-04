@@ -22,7 +22,7 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
     };
 
 
-    const text = type === 'login' ? "Non sei ancora registrato?" : "Hai già un account?";
+    //const text = type === 'login' ? "Non sei ancora registrato?" : "Hai già un account?";
 
     const formFields = [
         { label: 'Nome', name: 'nome', type: 'text', required: true, roles: ['studente', 'insegnante'] },
@@ -30,7 +30,8 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
         { label: 'Email', name: 'email', type: 'email', required: true, roles: ['login', 'studente', 'insegnante'] },
         { label: 'Password', name: 'password', type: 'password', required: true, roles: ['login', 'studente', 'insegnante'] },
         { label: 'Numero di Telefono', name: 'tel', type: 'text', required: true, roles: ['studente', 'insegnante'] },
-        { label: 'Attività', name: 'activities', type: 'checkboxSchoolOrWork', required: true, roles: ['studente'] },
+        { label: 'Studi o lavori?', name: 'activities', type: 'checkboxSchoolOrWork', required: true, roles: ['studente'] },
+        { label: 'Posso dare ripetizioni', name: 'ripetizioni', type: 'checkboxRipetizioni', required: false, roles: ['studente'] },
         { label: 'Università', name: 'university', type: 'text', required: false, roles: ['studente'], dependencies: ['school'] },
         { label: 'Facoltà', name: 'faculty', type: 'text', required: false, roles: ['studente'], dependencies: ['school'] },
         { label: 'Quanto ti puoi spostare?', name: 'distance', type: 'slider', required: true, roles: ['studente'] },
@@ -49,6 +50,9 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
     const [schoolChecked, setSchoolChecked] = useState(false);
     const [workChecked, setWorkChecked] = useState(false);
     const [distance, setDistance] = useState(10);
+    const [ripetizioni, setRipetizioni] = useState(false);
+
+    const label = { inputProps: { 'aria-label': 'Checkbox demo' } }; // Per checkbox ripetizioni
 
     const [privacyOpen, setPrivacyOpen] = useState(false);
     const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
@@ -60,7 +64,7 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
         });
     };
 
-    const handleCheckboxChange = (e) => {
+    const checkboxDistanceChange = (e) => {
         const { name, checked } = e.target;
 
         if (name === 'scuola') setSchoolChecked(checked);
@@ -78,6 +82,15 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
         });
     };
 
+    const checkboxRipetizioni = (e) => {
+        const { name, checked } = e.target;
+        setRipetizioni(checked)
+        setFormData({
+            ...formData,
+            ripetizioni: checked
+        });
+    }
+
     const handleSliderChange = (e, newValue) => {
         setDistance(newValue);
         setFormData({
@@ -91,6 +104,7 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 
         if (!acceptedPrivacy && type !== 'login') {
             setErrorMessage("Devi accettare l'informativa sulla privacy.");
+            console.log(acceptedPrivacy)
             return;
         }
 
@@ -114,6 +128,11 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 
         dataToSend.activities = {
             value: formData.activities || [],
+            required: false
+        };
+
+        dataToSend.ripetizioni = {
+            value: formData.ripetizioni || false,
             required: false
         };
 
@@ -184,22 +203,22 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 
                         if (!isDependencyMet) return null;
 
-                        switch (field.type) {
-                            case 'checkboxSchoolOrWork':
+                        switch (field.name) {
+                            case 'activities':
                                 return (
                                     <FormGroup key={field.name} sx={{ border: "1px solid #c2c2c2", padding: "15px", borderRadius: "4px" }}>
-                                        <Typography sx={{ fontSize: "17px", marginBottom: "10px", color: "#5e5e5e" }} variant="p" component="p">Studi o lavori?*</Typography>
+                                        <Typography sx={{ fontSize: "17px", marginBottom: "10px", color: "#5e5e5e" }} variant="p" component="p">{field.label}</Typography>
                                         <FormControlLabel
-                                            control={<Checkbox checked={schoolChecked} onChange={handleCheckboxChange} name="scuola" />}
+                                            control={<Checkbox checked={schoolChecked} onChange={checkboxDistanceChange} name="scuola" />}
                                             label="Studio"
                                         />
                                         <FormControlLabel
-                                            control={<Checkbox checked={workChecked} onChange={handleCheckboxChange} name="lavoro" />}
+                                            control={<Checkbox checked={workChecked} onChange={checkboxDistanceChange} name="lavoro" />}
                                             label="Lavoro"
                                         />
                                     </FormGroup>
                                 );
-                            case 'slider':
+                            case 'distance':
                                 return (
                                     <Box key={field.name} sx={{ display: 'flex', flexDirection: 'column' }}>
                                         <Typography id="input-slider" gutterBottom>
@@ -214,6 +233,13 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
                                         />
                                     </Box>
                                 );
+                            case 'ripetizioni':
+                                return (
+                                    <Box display="flex" alignItems="center">
+                                        <Typography>{field.label}</Typography>
+                                        <Checkbox {...label} onChange={checkboxRipetizioni} checked={ripetizioni}/>
+                                    </Box>
+                                )
                             default:
                                 return (
                                     <TextField
