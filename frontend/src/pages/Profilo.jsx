@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import '../assets/styles/Profilo.css';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 function Profilo() {
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
@@ -77,7 +79,7 @@ function Profilo() {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/users/editProfileData', {
+      const response = await fetch(`${apiUrl}/api/users/editProfileData`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -106,7 +108,7 @@ function Profilo() {
 
     const fetchUserProfileData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/users/getProfileData', {
+        const response = await fetch(`${apiUrl}/api/users/getProfileData`, {
           method: 'POST',
           credentials: 'include',
           headers: {

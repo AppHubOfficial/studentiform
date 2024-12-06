@@ -8,7 +8,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import PrivacyPolicyDialog from '../pages/PrivacyPolicyDialog';
 
-import '../assets/styles/LoginPage.css';
+const apiUrl = process.env.REACT_APP_API_URL;
 
 function LoginComponent({ type, setLoginOpen, setLoginType }) {
     const navigate = useNavigate();
@@ -145,7 +145,7 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
         console.log(dataToSend)
 
         try {
-            const response = await fetch(`http://localhost:5000/api/users/${type === 'login' ? 'login' : 'create-user'}`, {
+            const response = await fetch(`${apiUrl}/api/users/${type === 'login' ? 'login' : 'create-user'}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

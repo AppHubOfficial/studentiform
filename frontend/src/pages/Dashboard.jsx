@@ -7,6 +7,8 @@ import '../assets/styles/Dashboard.css';
 import SearchComponent from '../component/SearchComponent';
 import TableDataComponent from '../component/TableDataComponent';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -79,7 +81,7 @@ function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/users/logout', {
+      const response = await fetch(`${apiUrl}/api/users/logout`, {
         method: 'POST',
         credentials: 'include',
       });
@@ -102,7 +104,7 @@ function Dashboard() {
 
     const fetchUserProfileData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/users/getProfileData', {
+        const response = await fetch(`${apiUrl}/api/users/getProfileData`, {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -134,7 +136,7 @@ function Dashboard() {
 
     const fetchAllUsersData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/users/getUsersData', {
+        const response = await fetch(`${apiUrl}/api/users/getUsersData`, {
           method: 'POST',
           credentials: 'include',
           headers: {
