@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Button, Box, Typography, Modal } from '@mui/material';
 import LoginComponent from '../component/LoginComponent';
-import background from '../assets/images/programmers.png';
+import background from '../assets/images/programmers.jpg';
 
 function Home() {
   const [isLoginOpen, setLoginOpen] = useState(false);
