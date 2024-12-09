@@ -162,7 +162,7 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
                 navigate('/dashboard');
             } else {
                 console.log(data.error);
-                setErrorMessage('Problema di rete');
+                setErrorMessage(data.error || 'Problema di rete');
             }
         } catch (error) {
             console.error('Errore di rete:', error);
