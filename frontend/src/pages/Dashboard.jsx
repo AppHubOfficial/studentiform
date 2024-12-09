@@ -115,6 +115,8 @@ function Dashboard() {
         if (response.ok) {
           clearTimeout(timeout);
           const data = await response.json();
+
+          console.log("data in dashboard: " + data)
           if (data[0]?.type === "insegnante") {
             console.log("Insegnante");
             fetchAllUsersData();

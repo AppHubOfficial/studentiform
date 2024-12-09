@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Link as MuiLink, Alert, Checkbox, FormControlLabel, FormGroup, Typography, Slider } from '@mui/material';
+import { TextField, Button, Box, Link as MuiLink, Alert, Checkbox, FormControlLabel, FormGroup, Typography, Slider, CircularProgress } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AnimatePresence } from 'framer-motion';
@@ -12,7 +12,7 @@ const apiUrl = process.env.REACT_APP_API_URL;
 
 function LoginComponent({ type, setLoginOpen, setLoginType }) {
     const navigate = useNavigate();
-    const location = useLocation();
+    const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
     const loginAnimation = {
@@ -121,20 +121,22 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
             return acc;
         }, { type });
 
-        dataToSend.distance = {
-            value: distance,
-            required: true
-        };
+        if (type !== "login" && type !== "insegnante") {
+            dataToSend.distance = {
+                value: distance,
+                required: true
+            };
 
-        dataToSend.activities = {
-            value: formData.activities || [],
-            required: false
-        };
+            dataToSend.activities = {
+                value: formData.activities || [],
+                required: false
+            };
 
-        dataToSend.ripetizioni = {
-            value: formData.ripetizioni || false,
-            required: false
-        };
+            dataToSend.ripetizioni = {
+                value: formData.ripetizioni || false,
+                required: false
+            };
+        }
 
         const regex = /^\d+(\.\d+)?$/;
         if (regex.test(formData.tel) && formData.tel.length !== 10) {
@@ -142,7 +144,8 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
             return;
         }
 
-        console.log(dataToSend)
+        setErrorMessage('');
+        setIsLoading(true);
 
         try {
             const response = await fetch(`${apiUrl}/api/users/${type === 'login' ? 'login' : 'create-user'}`, {
@@ -159,10 +162,12 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
                 navigate('/dashboard');
             } else {
                 console.log(data.error);
-                setErrorMessage(data.error || 'Si è verificato un errore sconosciuto');
+                setErrorMessage('Problema di rete');
             }
         } catch (error) {
             console.error('Errore di rete:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -189,6 +194,9 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
                         ...(type === 'studente' && { height: '86vh' }),
                         boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
                         overflowY: 'auto',
+                        width: '73%',
+                        minWidth: '270px',
+                        minHeight: '250px',
                     }}
                 >
                     {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
@@ -237,7 +245,7 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
                                 return (
                                     <Box display="flex" alignItems="center">
                                         <Typography>{field.label}</Typography>
-                                        <Checkbox {...label} onChange={checkboxRipetizioni} checked={ripetizioni}/>
+                                        <Checkbox {...label} onChange={checkboxRipetizioni} checked={ripetizioni} />
                                     </Box>
                                 )
                             default:
@@ -272,15 +280,27 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 
                         />
                     ))}
+                    {isLoading ? (
+                        <CircularProgress
+                            style={{
+                                width: '40px',
+                                height: '40px',
+                                left: '45%',
+                                top: '20px',
+                                position: 'relative',
+                            }}
+                        />
+                    ) : (
+                        <Button variant="contained" color="primary" type="submit"
+                            style={{
+                                marginTop: '30px',
+                                ...(type === 'studente' && { marginBottom: '20px' })
+                            }}>
+                            Invia
+                        </Button>
+                    )}
 
 
-                    <Button variant="contained" color="primary" type="submit"
-                        style={{
-                            marginTop: '30px',
-                            ...(type === 'studente' && { marginBottom: '20px' })
-                        }}>
-                        Invia
-                    </Button>
 
                     {privacyOpen && (
                         <PrivacyPolicyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />

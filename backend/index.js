@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 const userRoutes = require('./routes/userRoutes');
-
 
 require('dotenv').config();
 
@@ -17,18 +17,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-app.use(session({
-  secret: '89g^_oPt7_0GYlC;YV#[8&uQ&3b,v&!q',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: false, // Mettere a true in produzione (HTTPS)
-    httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 // 1 giorno
-  }
-}));
-
+app.use(cookieParser());
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -38,6 +27,21 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/users', userRoutes);
+
+app.use((req, res, next) => {
+  const token = req.cookies.authToken;
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded;
+    } catch (err) {
+      console.error('Token non valido:', err.message);
+      res.status(401).json({ message: 'Token non valido o scaduto' });
+      return;
+    }
+  }
+  next();
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -3,6 +3,11 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const supabase = require('../utils/supabaseClient');
 
+const jwt = require('jsonwebtoken');
+
+require('dotenv').config();
+
+///////////////// CREATE USER /////////////////
 router.post('/create-user', async (req, res) => {
   const { type, ...fields } = req.body;
   console.log(req.body)
@@ -60,17 +65,32 @@ router.post('/create-user', async (req, res) => {
       return res.status(500).json({ error: error.message, details: error });
     }
 
-    req.session.userEmail = email;
-    req.session.userType = type;
+    const token = jwt.sign(
+      { email: email, type: type }, // il payload
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
 
-    await new Promise((resolve, reject) => {
-      req.session.save((err) => {
-        if (err) reject(err);
-        else resolve();
-      });
+    res.cookie('authToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60 * 24,
     });
 
-    console.log("Dati della sessione salvati create user:", req.session);
+    res.cookie('email', email, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
+
+    res.cookie('type', type, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
+
+    console.log('COOKIES:', req.cookies);
+
     res.status(201).json({ message: 'User created successfully', data });
   } catch (err) {
     res.status(500).json({ error: `Something went wrong`, details: err.message });
@@ -78,10 +98,10 @@ router.post('/create-user', async (req, res) => {
 });
 
 
-
+///////////////// LOGIN /////////////////
 router.post('/login', async (req, res) => {
   console.log(req.body);
-  const { email, password } = req.body;
+  const { email, password, type } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
@@ -104,107 +124,169 @@ router.post('/login', async (req, res) => {
     const matchPass = await bcrypt.compare(password.value, data[0].password);
 
     if (!matchPass) {
-      res.status(404).json({ error: 'Incorrect password' });
+      return res.status(404).json({ error: 'Incorrect password' });
     }
 
-    req.session.userEmail = email.value;
-    req.session.userType = data[0].type;
+    const token = jwt.sign(
+      { email: email.value, type: data[0].type }, // il payload
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
 
-    console.log("Dati della sessione salvati:", req.session);
+    res.cookie('authToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
+
+    res.cookie('email', email.value, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
+
+    res.cookie('type', type, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
+
     return res.status(200).json({ message: 'Login successful' });
 
   } catch (err) {
-    return res.status(500).json({ error: 'Something went wrong', details: err.message });
+    return res.status(500).json({ error: 'Something went wrong during login', details: err.message });
   }
 
 });
 
-
+///////////////// LOGOUT /////////////////
 router.post('/logout', (req, res) => {
-  console.log("Dati della sessione salvati logout:", req.session);
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Logout failed' });
-    }
-    console.log("Logged out successfully");
+  try {
+    res.clearCookie('authToken');
+    res.clearCookie('email');
+    res.clearCookie('type');
 
-    res.status(200).json({ message: 'Logged out successfully' });
-  });
+    return res.status(200).json({ message: 'Logged out successfully' });
+  } catch(err) {
+    return res.status(500).json({ error: 'Something went wrong during logout', details: err.message });
+  }
 });
 
-
+///////////////// GET PROFILE DATA /////////////////
 router.post('/getProfileData', async (req, res) => {
 
-  const email = req.session.userEmail;
-
-  console.log("Dati della sessione salvati getProfileData:", req.session);
-
-  if (!email) {
+  const token = req.cookies.authToken;
+  if (!token) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
 
-  const { data, error } = await supabase
-    .from('users')
-    .select('id, nome, email, tel, type, university, faculty, activities, distance, work, ripetizioni, note, created_at')
-    .eq('email', email);
+  try {
 
-  if (error) {
-    return res.status(500).json({ error: error.message });
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
+    const email = decodedData.email;
+
+    console.log("DECODED DATA: " + decodedData.email)
+
+    if (!email) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { data, error } = await supabase
+      .from('users')
+      .select('id, nome, email, tel, type, university, faculty, activities, distance, work, ripetizioni, note, created_at')
+      .eq('email', email);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    console.log("getProfileData: ", data);
+    res.status(200).json(data);
+  } catch (err) {
+    console.error('Errore durante la verifica del token: ', err.message);
+    res.status(401).json({ error: 'Invalid token' });
   }
 
-  console.log(data);
-  res.status(200).json(data);
 });
 
 
+///////////////// GET USERS DATA /////////////////
 router.post('/getUsersData', async (req, res) => {
-  const email = req.session.userEmail;
-  const type = req.session.userType;
 
-  console.log("Dati della sessione salvati getUsersData:", req.session);
-
-  if (!email) {
+  const token = req.cookies.authToken;
+  if (!token) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
 
-  if (type !== "insegnante") {
-    return res.status(401).json({ error: 'Not authorized' });
+  try {
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
+
+    const email = decodedData.email;
+    const type = decodedData.type;
+
+
+    if (!email) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    if (type !== "insegnante") {
+      return res.status(401).json({ error: 'Not authorized' });
+    }
+
+    const { data, error } = await supabase
+      .from('users')
+      .select('nome, email, tel, type, university, faculty, activities, distance, work, note, ripetizioni, created_at');
+
+    if (error) {
+      console.error('Errore nel recupero dei dati:', error);
+      return res.status(500).json({ error: 'Errore nel recupero dei dati' });
+    }
+
+    return res.json(data);
+  } catch (err) {
+    console.error('Errore durante la verifica del token: ', err.message);
+    res.status(401).json({ error: 'Invalid token' });
   }
 
-  const { data, error } = await supabase
-    .from('users')
-    .select('nome, email, tel, type, university, faculty, activities, distance, work, note, ripetizioni, created_at');
-
-  if (error) {
-    console.error('Errore nel recupero dei dati:', error);
-    return res.status(500).json({ error: 'Errore nel recupero dei dati' });
-  }
-
-  console.log('Dati recuperati:', data);
-  return res.json(data);
 });
 
-router.post('/editProfileData', async (req, res) => {
-  const email = req.session.userEmail;
 
-  if (!email) {
-    console.log(email);
+///////////////// EDIT PROFILE DATA /////////////////
+router.post('/editProfileData', async (req, res) => {
+  const token = req.cookies.authToken;
+  if (!token) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
 
-  const { nome, tel, type, university, faculty, activities, distance, note, work, ripetizioni } = req.body;
+  try {
 
-  const { data, error } = await supabase
-    .from('users')
-    .update({ nome, tel, type, university, faculty, activities, distance, note, work, ripetizioni })
-    .eq('email', email);
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
 
-  if (error) {
-    console.error('Errore durante aggiornamento profilo:', error);
-    return res.status(500).json({ error: 'Errore aggiornamento profilo' });
+    const email = decodedData.email;
+
+    if (!email) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { nome, tel, type, university, faculty, activities, distance, note, work, ripetizioni } = req.body;
+
+    const { data, error } = await supabase
+      .from('users')
+      .update({ nome, tel, type, university, faculty, activities, distance, note, work, ripetizioni })
+      .eq('email', email);
+
+    if (error) {
+      console.error('Errore durante aggiornamento profilo:', error);
+      return res.status(500).json({ error: 'Errore aggiornamento profilo' });
+    }
+
+    res.status(200).json(data);
+  } catch (err) {
+    console.error('Errore durante la verifica del token: ', err.message);
+    res.status(401).json({ error: 'Invalid token' });
   }
 
-  res.status(200).json(data);
+
 });
 
 
