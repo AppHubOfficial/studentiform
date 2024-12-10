@@ -117,14 +117,11 @@ router.post('/login', async (req, res) => {
       return res.status(500).json({ error: error.message });
     }
 
-    if (data.length === 0) {
-      return res.status(404).json({ error: 'Email not found: ' + email.value });
-    }
-
     const matchPass = await bcrypt.compare(password.value, data[0].password);
 
-    if (!matchPass) {
-      return res.status(404).json({ error: 'Incorrect password' });
+
+    if (data.length == 0 || !matchPass) {
+      return res.status(404).json({ error: 'Email o password errati' });
     }
 
     const token = jwt.sign(
