@@ -113,7 +113,7 @@ router.post('/login', async (req, res) => {
       .select('password, type')
       .eq('email', email.value);
 
-    console.log(data)
+    console.log("DATA LOGIN: " + data)
 
     if (error) {
       return res.status(500).json({ error: error.message });
@@ -124,7 +124,7 @@ router.post('/login', async (req, res) => {
     }
 
     const matchPass = await bcrypt.compare(password.value, data[0].password);
-    console.log(password.value);
+    console.log("PASSWORD LOGIN: " + password.value);
 
     if (!matchPass) {
       return res.status(404).json({ error: 'Email o password errati' });
