@@ -117,10 +117,13 @@ router.post('/login', async (req, res) => {
       return res.status(500).json({ error: error.message });
     }
 
+    if (data.length === 0) {
+      return res.status(404).json({ error: 'Email o password errati' });
+    }
+
     const matchPass = await bcrypt.compare(password.value, data[0].password);
 
-
-    if (data.length == 0 || !matchPass) {
+    if (!matchPass) {
       return res.status(404).json({ error: 'Email o password errati' });
     }
 
@@ -151,6 +154,7 @@ router.post('/login', async (req, res) => {
     return res.status(200).json({ message: 'Login successful' });
 
   } catch (err) {
+    
     return res.status(500).json({ error: 'Something went wrong during login', details: err.message });
   }
 
