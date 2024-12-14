@@ -74,22 +74,23 @@ router.post('/create-user', async (req, res) => {
     res.cookie('authToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'None',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
     res.cookie('email', email, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'None',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
     res.cookie('type', type, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'None',
       maxAge: 1000 * 60 * 60 * 24,
     });
-
-    console.log('COOKIES:', req.cookies);
 
     res.status(201).json({ message: 'User created successfully', data });
   } catch (err) {
@@ -136,18 +137,21 @@ router.post('/login', async (req, res) => {
     res.cookie('authToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'None',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
     res.cookie('email', email.value, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'None',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
     res.cookie('type', type, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'None',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
