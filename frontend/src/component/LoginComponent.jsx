@@ -231,17 +231,40 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
                         minHeight: '250px',
                     }}
                 >
-                    <Stepper activeStep={activeStep}>
-                        {steps.map((label, index) => {
-                            const stepProps = {};
-                            const labelProps = {};
-                            return (
-                                <Step key={label} {...stepProps}>
-                                    <StepLabel {...labelProps}>{label}</StepLabel>
-                                </Step>
-                            );
-                        })}
-                    </Stepper>
+                    {type == 'signin' &&
+                        <>
+                            <Stepper activeStep={activeStep}>
+                                {steps.map((label, index) => {
+                                    const stepProps = {};
+                                    const labelProps = {};
+                                    return (
+                                        <Step key={label} {...stepProps}>
+                                            <StepLabel {...labelProps}>{label}</StepLabel>
+                                        </Step>
+                                    );
+                                })}
+                            </Stepper>
+
+                            <React.Fragment>
+                                <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                                    <Button
+                                        color="inherit"
+                                        disabled={activeStep === 0}
+                                        onClick={handleBack}
+                                        sx={{ mr: 1 }}
+                                    >
+                                        Back
+                                    </Button>
+                                    <Box sx={{ flex: '1 1 auto' }} />
+                                    <Button onClick={handleNext}>
+                                        {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                                    </Button>
+                                </Box>
+                            </React.Fragment>
+                        </>
+
+                    }
 
                     {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
                     <ArrowBackIcon style={{ cursor: 'pointer' }}
