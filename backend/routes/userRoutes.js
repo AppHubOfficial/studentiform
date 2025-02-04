@@ -74,21 +74,21 @@ router.post('/create-user', async (req, res) => {
     res.cookie('authToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'None',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
     res.cookie('email', email, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'None',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
     res.cookie('type', type, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'None',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
@@ -137,21 +137,21 @@ router.post('/login', async (req, res) => {
     res.cookie('authToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'None',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
     res.cookie('email', email.value, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'None',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
     res.cookie('type', type, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'None',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
       maxAge: 1000 * 60 * 60 * 24,
     });
 

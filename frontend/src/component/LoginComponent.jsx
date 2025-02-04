@@ -3,6 +3,9 @@ import { TextField, Button, Box, Link as MuiLink, Alert, Checkbox, FormControlLa
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AnimatePresence } from 'framer-motion';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -14,6 +17,8 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [role, setRole] = useState("");
+    const [activeStep, setActiveStep] = React.useState(0);
 
     const loginAnimation = {
         hidden: { opacity: 1, scale: 0.1 },
@@ -21,10 +26,12 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
         exit: { opacity: 0, scale: 0, transition: { duration: 0.25, ease: 'easeIn' } },
     };
 
+    const formFieldsLogin = [
+        { label: 'Email', name: 'email', type: 'email', required: true, roles: ['studente', 'insegnante'] },
+        { label: 'Password', name: 'password', type: 'password', required: true, roles: ['studente', 'insegnante'] },
+    ];
 
-    //const text = type === 'login' ? "Non sei ancora registrato?" : "Hai già un account?";
-
-    const formFields = [
+    const formFieldsSignin = [
         { label: 'Nome', name: 'nome', type: 'text', required: true, roles: ['studente', 'insegnante'] },
         { label: 'Cognome', name: 'cognome', type: 'text', required: true, roles: ['studente', 'insegnante'] },
         { label: 'Email', name: 'email', type: 'email', required: true, roles: ['login', 'studente', 'insegnante'] },
@@ -39,7 +46,13 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
         { label: 'Note', name: 'note', type: 'text', required: false, roles: ['studente'] }
     ];
 
-    const filteredFields = formFields.filter(field => field.roles.includes(type));
+    let filteredFields;
+
+    if (type == "login") {
+        filteredFields = formFieldsLogin.filter(field => field.roles.includes(role));
+    } else {
+        filteredFields = formFieldsSignin.filter(field => field.roles.includes(role));
+    }
 
     const initialFormData = filteredFields.reduce((acc, field) => {
         acc[field.name] = '';
@@ -51,6 +64,26 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
     const [workChecked, setWorkChecked] = useState(false);
     const [distance, setDistance] = useState(10);
     const [ripetizioni, setRipetizioni] = useState(false);
+
+
+
+    ////////////// STEP FORM //////////////
+
+    const steps = ['Seleziona il tuo ruolo', 'Compila il form'];
+
+    const handleNext = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
+
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+
+    ///////////////////////////////////////
+
+
+
+    ////////////// HANDLE FORM //////////////
 
     const label = { inputProps: { 'aria-label': 'Checkbox demo' } }; // Per checkbox ripetizioni
 
@@ -99,6 +132,9 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
         });
     };
 
+    ////////////////////////////////////
+
+    ////////////// SUBMIT //////////////
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -107,11 +143,6 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
             console.log(acceptedPrivacy)
             return;
         }
-
-        // if (!schoolChecked && !workChecked && type !== 'login' && type !== 'insegnante') {
-        //     setErrorMessage("Campo scuola/lavoro non compilato");
-        //     return;
-        // }
 
         const dataToSend = filteredFields.reduce((acc, field) => {
             acc[field.name] = {
@@ -170,6 +201,7 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
             setIsLoading(false);
         }
     };
+    ////////////////////////////////////
 
     return (
         <AnimatePresence>
@@ -199,6 +231,18 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
                         minHeight: '250px',
                     }}
                 >
+                    <Stepper activeStep={activeStep}>
+                        {steps.map((label, index) => {
+                            const stepProps = {};
+                            const labelProps = {};
+                            return (
+                                <Step key={label} {...stepProps}>
+                                    <StepLabel {...labelProps}>{label}</StepLabel>
+                                </Step>
+                            );
+                        })}
+                    </Stepper>
+
                     {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
                     <ArrowBackIcon style={{ cursor: 'pointer' }}
                         onClick={() => {

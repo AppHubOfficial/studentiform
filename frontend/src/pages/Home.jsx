@@ -9,7 +9,7 @@ function Home() {
 
   const handleOpenLogin = (type) => {
     setLoginType(type);
-    setLoginOpen(true); 
+    setLoginOpen(true);
   };
 
   const handleCloseLogin = () => {
@@ -29,15 +29,47 @@ function Home() {
         color: '#ffffff',
       }}
     >
-      {/* <AppBar position="static" sx={{ backgroundColor: '#333333' }}>
+      <AppBar position="static" sx={{ backgroundColor: '#333333' }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="h6" sx={{ fontWeight: 'bold', cursor: 'pointer' }}>
             EduPlatform
           </Typography>
+
+          <Button
+            variant="outlined"
+            onClick={() => handleOpenLogin('login')}
+            style={{ 
+              padding: '8px',
+              width: '90px',
+              borderColor: 'rgb(187, 187, 187)',
+              color: 'rgb(244, 244, 244)',
+              position: 'absolute',
+              right: '30px',
+              height: '35px'
+            }}
+          >
+            Login
+          </Button>
+
+          <Button
+            variant="outlined"
+            onClick={() => handleOpenLogin('signin')}
+            style={{ 
+              padding: '8px',
+              width: '90px',
+              borderColor: 'rgb(187, 187, 187)',
+              color: 'rgb(244, 244, 244)',
+              position: 'absolute',
+              right: '145px',
+              height: '35px'
+            }}
+          >
+            Signin
+          </Button>
           <Box>
           </Box>
         </Toolbar>
-      </AppBar> */}
+      </AppBar>
 
       <Box
         sx={{
@@ -52,14 +84,8 @@ function Home() {
           overflowY: 'auto',
         }}
       >
-        <Typography variant="h3" component="h1" gutterBottom>
-          Benvenuto su EduPlatform!
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Scegli il tuo percorso per iniziare.
-        </Typography>
 
-        <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+        {/*<Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
           <Button
             variant="contained"
             color="primary"
@@ -76,24 +102,8 @@ function Home() {
           >
             Sono un Insegnante
           </Button>
-        </Box>
+        </Box>*/}
 
-        <Typography variant="body1" sx={{ mt: 3 }}>
-          Sei già registrato? Accedi qui:
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={() => handleOpenLogin('login')}
-          sx={{
-            backgroundColor: '#00b11e',
-            color: '#ffffff',
-            mt: 1,
-            paddingX: 3,
-          }}
-          style={{ padding: '13px' }}
-        >
-          Login
-        </Button>
       </Box>
 
       <Modal
@@ -107,7 +117,7 @@ function Home() {
           justifyContent: 'center',
         }}
       >
-          <LoginComponent type={loginType} setLoginOpen={setLoginOpen} setLoginType={setLoginType} />
+        <LoginComponent type={loginType} setLoginOpen={setLoginOpen} setLoginType={setLoginType} />
       </Modal>
     </Box>
   );
