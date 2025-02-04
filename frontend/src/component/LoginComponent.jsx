@@ -72,7 +72,9 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
     const steps = ['Seleziona il tuo ruolo', 'Compila il form'];
 
     const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        if (activeStep < steps.length-1) {
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
     };
 
     const handleBack = () => {
@@ -244,26 +246,7 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
                                     );
                                 })}
                             </Stepper>
-
-                            <React.Fragment>
-                                <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>
-                                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                                    <Button
-                                        color="inherit"
-                                        disabled={activeStep === 0}
-                                        onClick={handleBack}
-                                        sx={{ mr: 1 }}
-                                    >
-                                        Back
-                                    </Button>
-                                    <Box sx={{ flex: '1 1 auto' }} />
-                                    <Button onClick={handleNext}>
-                                        {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                                    </Button>
-                                </Box>
-                            </React.Fragment>
                         </>
-
                     }
 
                     {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
@@ -372,6 +355,26 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
                     {privacyOpen && (
                         <PrivacyPolicyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
                     )}
+
+                    {type == "signin" &&
+                        <React.Fragment>
+                            <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                                <Button
+                                    color="inherit"
+                                    disabled={activeStep === 0}
+                                    onClick={handleBack}
+                                    sx={{ mr: 1 }}
+                                >
+                                    Indietro
+                                </Button>
+                                <Box sx={{ flex: '1 1 auto' }} />
+                                <Button onClick={handleNext}>
+                                    {activeStep >= steps.length - 1 ? 'Invia' : 'Avanti'}
+                                </Button>
+                            </Box>
+                        </React.Fragment>
+                    }
 
                 </Box>
             </motion.div>
