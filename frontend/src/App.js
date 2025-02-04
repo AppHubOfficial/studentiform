@@ -8,6 +8,7 @@ import Page404 from './pages/Page404.jsx';
 import Profilo from './pages/Profilo.jsx';
 import Impostazioni from './pages/Impostazioni.jsx';
 import PrivacyPolicyDialog from './pages/PrivacyPolicyDialog.jsx';
+import PrenotazioneCogestione from './component/FormCogestione.jsx';
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: "/profilo",
     element: <Profilo />,
+  },
+  {
+    path: "/cogestione",
+    element: <PrenotazioneCogestione />,
   },
   {
     path: "/impostazioni",

@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Button, Box, Typography, Modal } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import LoginComponent from '../component/LoginComponent';
 import background from '../assets/images/programmers.jpg';
 
 function Home() {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [loginType, setLoginType] = useState('');
+
+  // Initialize the navigate function
+  const navigate = useNavigate();
 
   const handleOpenLogin = (type) => {
     setLoginType(type);
@@ -38,7 +42,7 @@ function Home() {
           <Button
             variant="outlined"
             onClick={() => handleOpenLogin('login')}
-            style={{ 
+            style={{
               padding: '8px',
               width: '90px',
               borderColor: 'rgb(187, 187, 187)',
@@ -54,7 +58,7 @@ function Home() {
           <Button
             variant="outlined"
             onClick={() => handleOpenLogin('signin')}
-            style={{ 
+            style={{
               padding: '8px',
               width: '90px',
               borderColor: 'rgb(187, 187, 187)',
@@ -66,8 +70,23 @@ function Home() {
           >
             Signin
           </Button>
-          <Box>
-          </Box>
+
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/cogestione')}
+            style={{
+              padding: '8px',
+              width: '120px',
+              borderColor: 'rgb(187, 187, 187)',
+              color: 'rgb(244, 244, 244)',
+              position: 'absolute',
+              right: '260px',
+              height: '35px'
+            }}
+          >
+            Cogestione
+          </Button>
+
         </Toolbar>
       </AppBar>
 
