@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Button, Box, Typography, Modal } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import LoginComponent from '../component/LoginComponent';
 import background from '../assets/images/programmers.jpg';
 
@@ -8,7 +8,6 @@ function Home() {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [loginType, setLoginType] = useState('');
 
-  // Initialize the navigate function
   const navigate = useNavigate();
 
   const handleOpenLogin = (type) => {
