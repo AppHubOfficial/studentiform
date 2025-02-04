@@ -158,7 +158,7 @@ router.post('/login', async (req, res) => {
     return res.status(200).json({ message: 'Login successful' });
 
   } catch (err) {
-    
+
     return res.status(500).json({ error: 'Something went wrong during login', details: err.message });
   }
 
@@ -172,7 +172,7 @@ router.post('/logout', (req, res) => {
     res.clearCookie('type');
 
     return res.status(200).json({ message: 'Logged out successfully' });
-  } catch(err) {
+  } catch (err) {
     return res.status(500).json({ error: 'Something went wrong during logout', details: err.message });
   }
 });
@@ -291,9 +291,32 @@ router.post('/editProfileData', async (req, res) => {
     res.status(401).json({ error: 'Invalid token' });
   }
 
-
 });
 
+
+///////////////// SAVE DATA COGESTIONE /////////////////
+router.post('/save_data_cogestione', async (req, res) => {
+  console.log(req.body);
+  const { nome, cognome, classe, attivitaMattina, attivitaPomeriggio, mangioScuola } = req.body;
+  try {
+
+    const { data, error } = await supabase
+      .from('cogestione')
+      .insert([
+        {
+          nome,
+          cognome,
+          classe,
+          attivita_mattina: attivitaMattina,
+          attivita_pomeriggio: attivitaPomeriggio,
+          mangio_scuola: mangioScuola,
+        }
+      ]);
+
+  } catch (err) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+});
 
 
 module.exports = router;

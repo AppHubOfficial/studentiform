@@ -5,6 +5,8 @@ const classi = ["1", "2", "3", "4", "5"];
 const attivitaMattina = ["Sport", "Laboratorio", "Musica", "Ora d'aria"];
 const attivitaPomeriggio = ["Teatro", "Coding", "Pittura", "Ora d'aria"];
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 export default function PrenotazioneCogestione() {
   const [classe, setClasse] = useState("");
   const [nome, setNome] = useState("");
@@ -12,6 +14,45 @@ export default function PrenotazioneCogestione() {
   const [mangioScuola, setMangioScuola] = useState(false);
   const [attivita, setAttivita] = useState({ mattina: ["", "", ""], pomeriggio: "" });
   const [oraDAriaCount, setOraDAriaCount] = useState(0);
+  const [formData, setFormData] = useState("");
+  const [formSend, setFormSend] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = {
+      nome,
+      cognome,
+      classe,
+      attivitaMattina: attivita.mattina,
+      attivitaPomeriggio: attivita.pomeriggio,
+      mangioScuola,
+    };
+
+    console.log("Dati inviati:", formData);
+
+    try {
+      const response = await fetch(`${apiUrl}/api/users/save_data_cogestione`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setFormSend(true);
+      } else {
+        console.log(data.error);
+        setErrorMessage(data.error || 'Problema di rete');
+      }
+    } catch (error) {
+      console.error('Errore di rete:', error);
+    }
+  };
+
 
   const handleAttivitaChange = (type, index, value) => {
     let newAttivita = { ...attivita };
@@ -25,7 +66,12 @@ export default function PrenotazioneCogestione() {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: "auto", mt: 4, p: 3, boxShadow: 3, borderRadius: 2, backgroundColor: "white" }}>
+    <Box
+      sx={{ maxWidth: 400, mx: "auto", mt: 4, p: 3, boxShadow: 3, borderRadius: 2, backgroundColor: "white" }}
+      component="form"
+      onSubmit={handleSubmit}
+    >
+
       <Typography variant="h5" gutterBottom> Prenotazione Cogestione </Typography>
       <TextField fullWidth label="Nome" value={nome} onChange={(e) => setNome(e.target.value)} margin="normal" />
       <TextField fullWidth label="Cognome" value={cognome} onChange={(e) => setCognome(e.target.value)} margin="normal" />
@@ -35,7 +81,7 @@ export default function PrenotazioneCogestione() {
           {classi.map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
         </Select>
       </FormControl>
-      
+
       <Typography variant="h6" sx={{ mt: 2 }}> Mattina </Typography>
       {[0, 1, 2].map(i => (
         <FormControl fullWidth margin="normal" key={i}>
@@ -45,7 +91,7 @@ export default function PrenotazioneCogestione() {
           </Select>
         </FormControl>
       ))}
-      
+
       {(classe === "1" || classe === "2") && (
         <>
           <Typography variant="h6" sx={{ mt: 2 }}> Mercoledì Pomeriggio </Typography>
@@ -58,7 +104,7 @@ export default function PrenotazioneCogestione() {
           <FormControlLabel control={<Checkbox checked={mangioScuola} onChange={() => setMangioScuola(!mangioScuola)} />} label="Mangio a scuola (1€)" />
         </>
       )}
-      
+
       {(classe === "3" || classe === "4" || classe === "5") && (
         <>
           <Typography variant="h6" sx={{ mt: 2 }}> Giovedì Pomeriggio </Typography>
@@ -71,8 +117,8 @@ export default function PrenotazioneCogestione() {
           <FormControlLabel control={<Checkbox checked={mangioScuola} onChange={() => setMangioScuola(!mangioScuola)} />} label="Mangio a scuola (1€)" />
         </>
       )}
-      
-      <Button fullWidth variant="contained" sx={{ mt: 2 }}>Prenota</Button>
+
+      <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">Prenota</Button>
     </Box>
   );
 }
