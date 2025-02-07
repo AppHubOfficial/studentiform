@@ -2,13 +2,12 @@ import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import Home from './pages/Home.jsx';
-import LoginPage from './component/LoginComponent.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Page404 from './pages/Page404.jsx';
 import Profilo from './pages/Profilo.jsx';
 import Impostazioni from './pages/Impostazioni.jsx';
 import PrivacyPolicyDialog from './pages/PrivacyPolicyDialog.jsx';
-import PrenotazioneCogestione from './component/FormCogestione.jsx';
+import FormCogestione from './pages/FormCogestione.jsx';
 
 const router = createBrowserRouter([
   {
@@ -19,17 +18,13 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <Dashboard />,
   },
-  // {
-  //   path: "/login",
-  //   element: <LoginPage />,
-  // },
   {
     path: "/profilo",
     element: <Profilo />,
   },
   {
     path: "/cogestione",
-    element: <PrenotazioneCogestione />,
+    element: <FormCogestione />,
   },
   {
     path: "/impostazioni",

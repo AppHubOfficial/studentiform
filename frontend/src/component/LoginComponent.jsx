@@ -350,8 +350,6 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
                         </Button>
                     )}
 
-
-
                     {privacyOpen && (
                         <PrivacyPolicyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
                     )}
