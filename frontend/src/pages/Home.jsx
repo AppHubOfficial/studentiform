@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Button, Box, Typography, Modal, Card, CardContent } from '@mui/material';
-import LoginComponent from '../component/LoginComponent';
+import LoginComponent from '../components/LoginComponent';
 import background from '../assets/images/programmers.jpg';
 
-import Header from '../component/Header';
-import HeroSection from '../component/HeroSection';
-import HomeEvents from '../component/HomeEvents';
+import Header from '../components/Header';
+import HeroSection from '../components/HeroSection';
+import HomeEvents from '../components/HomeEvents';
+import Footer from '../components/Footer'
 
 function Home() {
   const [isLoginOpen, setLoginOpen] = useState(false);
@@ -25,7 +26,7 @@ function Home() {
     <>
       <Box
         sx={{
-          height: '70vh',
+          height: '65vh',
           display: 'flex',
           flexDirection: 'column',
           backgroundImage: `url(${background})`,
@@ -40,12 +41,7 @@ function Home() {
 
       <HomeEvents />
 
-
-      {/* Footer */}
-      <Box sx={{ backgroundColor: '#333', color: '#fff', textAlign: 'center', padding: '20px', mt: 5, marginTop: '0 !important' }}>
-        <Typography variant="body2">© 2025 EduPlatform - Tutti i diritti riservati</Typography>
-        <Typography variant="body2">IIS Andriano - Castelnuovo Don Bosco</Typography>
-      </Box>
+      <Footer />
 
       <Modal
         open={isLoginOpen}

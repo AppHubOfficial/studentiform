@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Alert, Divider } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import DrawerMenu from '../component/DrawerMenu';
+import DrawerMenu from '../components/DrawerMenu';
 import MenuIcon from '@mui/icons-material/Menu';
 import '../assets/styles/Dashboard.css';
-import SearchComponent from '../component/SearchComponent';
-import TableDataComponent from '../component/TableDataComponent';
+import SearchComponent from '../components/SearchComponent';
+import TableDataComponent from '../components/TableDataComponent';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
