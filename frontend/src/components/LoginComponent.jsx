@@ -7,7 +7,7 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CloseIcon from '@mui/icons-material/Close';
 
 import PrivacyPolicyDialog from '../pages/PrivacyPolicyDialog';
 
@@ -232,6 +232,7 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 						margin: 'auto',
 						...(type === 'studente' && { height: '86vh' }),
 						boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+						maxHeight: '80vh',
 						overflowY: 'auto',
 						width: '73%',
 						minWidth: '270px',
@@ -239,125 +240,131 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 					}}
 				>
 					{errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
-					<ArrowBackIcon style={{ cursor: 'pointer' }}
+					<CloseIcon style={{ cursor: 'pointer' }}
 						onClick={() => {
 							setLoginOpen(false);
 							setLoginType('');
 						}}
-					></ArrowBackIcon>
+					></CloseIcon>
 
 
-					{type == 'signin' &&
-						<>
-							<Stepper activeStep={activeStep}>
-								{steps.map((label, index) => {
-									const stepProps = {};
-									const labelProps = {};
-									return (
-										<Step key={label} {...stepProps}>
-											<StepLabel {...labelProps}>{label}</StepLabel>
-										</Step>
-									);
-								})}
-							</Stepper>
-
-							{activeStep == 0 ? (
-								<>
-									<Typography sx={{ margin: '25px 0px 15px 0px' }} variant="h6">Seleziona il tuo ruolo</Typography>
-									<FormControl sx={{ minWidth: 120, marginBottom: "10px" }}>
-										<InputLabel id="selectRole">Ruolo</InputLabel>
-										<Select
-											labelId="selectRole"
-											id="selectRole"
-											value={role}
-											label="Ruolo"
-											onChange={handleChangeRole}
-										>
-											<MenuItem value={"studente"}>Studente</MenuItem>
-											<MenuItem value={"insegnante"}>Insegnante</MenuItem>
-										</Select>
-									</FormControl>
-								</>
-							) : (
-								<>
-									{filteredFields.map((field) => {
-										const isDependencyMet = !field.dependencies || field.dependencies.every(dep => (dep === 'school' ? schoolChecked : workChecked));
-
-										if (!isDependencyMet) return null;
-
-										switch (field.name) {
-											case 'activities':
-												return (
-													<FormGroup key={field.name} sx={{ border: "1px solid #c2c2c2", padding: "15px", borderRadius: "4px" }}>
-														<Typography sx={{ fontSize: "17px", marginBottom: "10px", color: "#5e5e5e" }} variant="p" component="p">{field.label}</Typography>
-														<FormControlLabel
-															control={<Checkbox checked={schoolChecked} onChange={checkboxDistanceChange} name="scuola" />}
-															label="Studio"
-														/>
-														<FormControlLabel
-															control={<Checkbox checked={workChecked} onChange={checkboxDistanceChange} name="lavoro" />}
-															label="Lavoro"
-														/>
-													</FormGroup>
-												);
-											case 'distance':
-												return (
-													<Box key={field.name} sx={{ display: 'flex', flexDirection: 'column' }}>
-														<Typography id="input-slider" gutterBottom>
-															{field.label} {distance}km
-														</Typography>
-														<Slider
-															value={distance}
-															onChange={handleSliderChange}
-															aria-labelledby="input-slider"
-															min={0}
-															max={100}
-														/>
-													</Box>
-												);
-											case 'ripetizioni':
-												return (
-													<Box key={field.name} display="flex" alignItems="center">
-														<Typography>{field.label}</Typography>
-														<Checkbox {...label} onChange={checkboxRipetizioni} checked={ripetizioni} />
-													</Box>
-												);
-											default:
-												return (
-													<TextField
-														key={field.name}
-														label={field.label}
-														name={field.name}
-														type={field.type}
-														value={formData[field.name]}
-														onChange={handleChange}
-														variant="outlined"
-														required={field.required}
-													/>
-												);
-										}
-
-
+					{type == 'signin' ?
+						(
+							<>
+								<Stepper activeStep={activeStep}>
+									{steps.map((label, index) => {
+										const stepProps = {};
+										const labelProps = {};
+										return (
+											<Step key={label} {...stepProps}>
+												<StepLabel {...labelProps}>{label}</StepLabel>
+											</Step>
+										);
 									})}
+								</Stepper>
 
-									<FormControlLabel
-										control={
-											<Checkbox
-												checked={acceptedPrivacy}
-												onChange={(e) => setAcceptedPrivacy(e.target.checked)}
-												sx={{ width: '40px' }}
-											/>
-										}
-										label={
-											<Typography>
-												Ho letto e accetto <MuiLink onClick={() => setPrivacyOpen(true)} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>l'informativa sulla privacy</MuiLink>.
-											</Typography>
-										}
-									/>
+								{activeStep == 0 ? (
+									<>
+										<FormControl sx={{ minWidth: 120, margin: "40px 0px" }}>
+											<InputLabel id="selectRole">Ruolo</InputLabel>
+											<Select
+												labelId="selectRole"
+												id="selectRole"
+												value={role}
+												label="Ruolo"
+												onChange={handleChangeRole}
+											>
+												<MenuItem value={"studente"}>Studente</MenuItem>
+												<MenuItem value={"insegnante"}>Insegnante</MenuItem>
+											</Select>
+										</FormControl>
+									</>
+								) : (
+									<>
+										{filteredFields.map((field) => {
+											const isDependencyMet = !field.dependencies || field.dependencies.every(dep => (dep === 'school' ? schoolChecked : workChecked));
 
-								</>
-							)}
-						</>
+											if (!isDependencyMet) return null;
+
+											switch (field.name) {
+												case 'activities':
+													return (
+														<FormGroup key={field.name} sx={{ border: "1px solid #c2c2c2", padding: "15px", borderRadius: "4px" }}>
+															<Typography sx={{ fontSize: "17px", marginBottom: "10px", color: "#5e5e5e" }} variant="p" component="p">{field.label}</Typography>
+															<FormControlLabel
+																control={<Checkbox checked={schoolChecked} onChange={checkboxDistanceChange} name="scuola" />}
+																label="Studio"
+															/>
+															<FormControlLabel
+																control={<Checkbox checked={workChecked} onChange={checkboxDistanceChange} name="lavoro" />}
+																label="Lavoro"
+															/>
+														</FormGroup>
+													);
+												case 'distance':
+													return (
+														<Box key={field.name} sx={{ display: 'flex', flexDirection: 'column' }}>
+															<Typography id="input-slider" gutterBottom>
+																{field.label} {distance}km
+															</Typography>
+															<Slider
+																value={distance}
+																onChange={handleSliderChange}
+																aria-labelledby="input-slider"
+																min={0}
+																max={100}
+															/>
+														</Box>
+													);
+												case 'ripetizioni':
+													return (
+														<Box key={field.name} display="flex" alignItems="center">
+															<Typography>{field.label}</Typography>
+															<Checkbox {...label} onChange={checkboxRipetizioni} checked={ripetizioni} />
+														</Box>
+													);
+												default:
+													return (
+														<TextField
+															key={field.name}
+															label={field.label}
+															name={field.name}
+															type={field.type}
+															value={formData[field.name]}
+															onChange={handleChange}
+															variant="outlined"
+															required={field.required}
+														/>
+													);
+											}
+
+
+										})}
+
+										<FormControlLabel
+											control={
+												<Checkbox
+													checked={acceptedPrivacy}
+													onChange={(e) => setAcceptedPrivacy(e.target.checked)}
+													sx={{ width: '40px' }}
+												/>
+											}
+											label={
+												<Typography>
+													Ho letto e accetto <MuiLink onClick={() => setPrivacyOpen(true)} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>l'informativa sulla privacy</MuiLink>.
+												</Typography>
+											}
+										/>
+
+									</>
+								)}
+							</>
+						) : (
+							<>
+								<TextField fullWidth required label="Nome" />
+								<TextField fullWidth required label="Cognome" />
+							</>
+						)
 					}
 
 					{
@@ -411,9 +418,11 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 								<Box sx={{ flex: '1 1 auto' }} />
 								{
 									activeStep < steps.length - 1 && (
-										<Button onClick={handleNext}>
+										<Button
+											onClick={handleNext}
+											disabled={!role}>
 											{/*activeStep >= steps.length - 1 ? 'Invia' : 'Avanti'*/}
-											{'Avanti'}
+											Avanti
 										</Button>
 									)
 								}
