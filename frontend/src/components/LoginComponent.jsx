@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Link as MuiLink, Alert, Checkbox, FormControlLabel, FormGroup, Typography, Slider, CircularProgress } from '@mui/material';
+import { TextField, Button, Box, Link as MuiLink, Alert, Checkbox, FormControlLabel, FormControl, FormGroup, Typography, Slider, CircularProgress, InputLabel, Select, MenuItem } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AnimatePresence } from 'framer-motion';
@@ -19,6 +19,10 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 	const [errorMessage, setErrorMessage] = useState("");
 	const [role, setRole] = useState("");
 	const [activeStep, setActiveStep] = useState(0);
+
+	const handleChangeRole = (event) => {
+		setRole(event.target.value);
+	};
 
 	const loginAnimation = {
 		hidden: { opacity: 1, scale: 0.1 },
@@ -48,7 +52,7 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 
 	let filteredFields;
 
-	if (type == "login") {
+	if (type == "login" && role) {
 		filteredFields = formFieldsLogin.filter(field => field.roles.includes(role));
 	} else {
 		filteredFields = formFieldsSignin.filter(field => field.roles.includes(role));
@@ -258,8 +262,22 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 							</Stepper>
 
 							{activeStep == 0 ? (
-								<Typography sx={{ margin: '25px 10px' }} variant="h6">Seleziona il tuo ruolo</Typography>
-
+								<>
+									<Typography sx={{ margin: '25px 0px 15px 0px' }} variant="h6">Seleziona il tuo ruolo</Typography>
+									<FormControl sx={{ minWidth: 120, marginBottom: "10px" }}>
+										<InputLabel id="selectRole">Ruolo</InputLabel>
+										<Select
+											labelId="selectRole"
+											id="selectRole"
+											value={role}
+											label="Ruolo"
+											onChange={handleChangeRole}
+										>
+											<MenuItem value={"studente"}>Studente</MenuItem>
+											<MenuItem value={"insegnante"}>Insegnante</MenuItem>
+										</Select>
+									</FormControl>
+								</>
 							) : (
 								<>
 									{filteredFields.map((field) => {
@@ -354,13 +372,19 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 								}}
 							/>
 						) : (
-							<Button variant="contained" color="primary" type="submit"
-								style={{
-									marginTop: '30px',
-									...(type === 'studente' && { marginBottom: '20px' })
-								}}>
-								Invia
-							</Button>
+							(type == 'signin' && activeStep == steps.length - 1) && (
+								<Button
+									variant="contained"
+									color="primary"
+									type="submit"
+									style={{
+										marginTop: '30px',
+										...(type === 'studente' && { marginBottom: '20px' }),
+									}}
+								>
+									Invia
+								</Button>
+							)
 						)
 					}
 
@@ -369,7 +393,6 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 							<PrivacyPolicyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
 						)
 					}
-
 
 
 					{
@@ -386,9 +409,15 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 									Indietro
 								</Button>
 								<Box sx={{ flex: '1 1 auto' }} />
-								<Button onClick={handleNext}>
-									{activeStep >= steps.length - 1 ? 'Invia' : 'Avanti'}
-								</Button>
+								{
+									activeStep < steps.length - 1 && (
+										<Button onClick={handleNext}>
+											{/*activeStep >= steps.length - 1 ? 'Invia' : 'Avanti'*/}
+											{'Avanti'}
+										</Button>
+									)
+								}
+
 							</Box>
 						</React.Fragment>
 					}

@@ -87,6 +87,7 @@ export default function PrenotazioneCogestione() {
                     padding: '65px 30px 30px 30px',
                     backgroundColor: 'white',
                     marginBottom: '20px',
+                    marginTop: "50px !important",
                     color: '#3e3e3e',
                 }}
                 component="form"
