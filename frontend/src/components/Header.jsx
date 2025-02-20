@@ -16,14 +16,14 @@ function Header({handleOpenLogin, handleCloseLogin}) {
                 onClick={() => handleOpenLogin('signin')}
                 sx={{ marginRight: 2, borderColor: '#bbb', color: '#f4f4f4' }}
               >
-                Signin
+                Registrati
               </Button>
               <Button
                 variant="outlined"
                 onClick={() => handleOpenLogin('login')}
                 sx={{ borderColor: '#bbb', color: '#f4f4f4' }}
               >
-                Login
+                Accedi
               </Button>
             </Box>
           </Toolbar>
