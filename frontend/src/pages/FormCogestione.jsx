@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { TextField, MenuItem, FormControlLabel, Checkbox, Button, FormControl, InputLabel, Select, Typography, Box } from "@mui/material";
+import { TextField, MenuItem, FormControlLabel, Checkbox, Button, FormControl, InputLabel, Select, Typography, Box, Modal, CircularProgress } from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+
 import backgroundCogestione from '../assets/images/sport.jpg';
 
 const classi = ["1", "2", "3", "4", "5"];
@@ -8,6 +11,17 @@ const attivitaPomeriggio = ["Teatro", "Coding", "Pittura", "Ora d'aria"];
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
+const styleModal = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -100%)',
+    width: 240,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+};
+
 export default function PrenotazioneCogestione() {
     const [classe, setClasse] = useState("");
     const [nome, setNome] = useState("");
@@ -15,8 +29,13 @@ export default function PrenotazioneCogestione() {
     const [mangioScuola, setMangioScuola] = useState(false);
     const [attivita, setAttivita] = useState({ mattina: ["", "", ""], pomeriggio: "" });
     const [oraDAriaCount, setOraDAriaCount] = useState(0);
-    const [formSend, setFormSend] = useState("");
+    const [open, setOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -31,6 +50,9 @@ export default function PrenotazioneCogestione() {
         };
 
         console.log("Dati inviati:", formData);
+        setErrorMessage("")
+        setOpen(true);
+        setIsLoading(true);
 
         try {
             const response = await fetch(`${apiUrl}/api/users/save_data_cogestione`, {
@@ -43,13 +65,17 @@ export default function PrenotazioneCogestione() {
             const data = await response.json();
 
             if (response.ok) {
-                setFormSend(true);
+                console.log("SUCCESS")
+                setIsLoading(false);
             } else {
                 console.log(data.error);
                 setErrorMessage(data.error || 'Problema di rete');
             }
         } catch (error) {
             console.error('Errore di rete:', error);
+            setErrorMessage("Errore di rete")
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -76,6 +102,31 @@ export default function PrenotazioneCogestione() {
                 backgroundPosition: 'center',
             }}
         >
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+            >
+                <Box sx={{ ...styleModal, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {isLoading ? (
+                        <CircularProgress
+                            style={{
+                                width: '30px',
+                                height: '30px',
+                            }}
+                        />
+                    ) : (
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: errorMessage ? "#CC0000" : "#006200" }}>
+                            {errorMessage ? <CloseIcon /> : <CheckIcon fontSize="large" />}
+                            <Typography id="modal-modal-title" variant="h6" component="h2">
+                                {errorMessage || "Il form è stato inviato"}
+                            </Typography>
+                        </Box>
+                    )}
+                </Box>
+
+            </Modal>
+
             <Box
                 sx={{
                     maxWidth: 400,
@@ -173,8 +224,11 @@ export default function PrenotazioneCogestione() {
                 )}
 
                 <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">Prenota</Button>
-            </Box>
-        </Box>
 
-    );
+
+
+            </Box>
+
+        </Box>
+    )
 }

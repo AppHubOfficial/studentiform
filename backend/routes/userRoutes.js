@@ -313,6 +313,8 @@ router.post('/save_data_cogestione', async (req, res) => {
         }
       ]);
 
+      res.status(200).json(data);
+
   } catch (err) {
     res.status(401).json({ error: 'Invalid token' });
   }

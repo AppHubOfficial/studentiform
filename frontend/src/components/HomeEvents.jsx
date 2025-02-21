@@ -50,6 +50,7 @@ function HomeEvents() {
                             marginTop: '40px',
                             cursor: 'pointer'
                         }}
+                        key={index}
                     >
                         <CardContent onClick={() => navigate(event.goto)}>
                             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
