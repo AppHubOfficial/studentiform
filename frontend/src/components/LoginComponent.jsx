@@ -30,16 +30,11 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 		exit: { opacity: 0, scale: 0, transition: { duration: 0.25, ease: 'easeIn' } },
 	};
 
-	const formFieldsLogin = [
-		{ label: 'Email', name: 'email', type: 'email', required: true, roles: ['studente', 'insegnante'] },
-		{ label: 'Password', name: 'password', type: 'password', required: true, roles: ['studente', 'insegnante'] },
-	];
-
-	const formFieldsSignin = [
+	const formFields = [
 		{ label: 'Nome', name: 'nome', type: 'text', required: true, roles: ['studente', 'insegnante'] },
 		{ label: 'Cognome', name: 'cognome', type: 'text', required: true, roles: ['studente', 'insegnante'] },
-		{ label: 'Email', name: 'email', type: 'email', required: true, roles: ['login', 'studente', 'insegnante'] },
-		{ label: 'Password', name: 'password', type: 'password', required: true, roles: ['login', 'studente', 'insegnante'] },
+		{ label: 'Email', name: 'email', type: 'email', required: true, roles: ['studente', 'insegnante'], showInLogin: true },
+		{ label: 'Password', name: 'password', type: 'password', required: true, roles: ['studente', 'insegnante'], showInLogin: true },
 		{ label: 'Numero di Telefono', name: 'tel', type: 'text', required: true, roles: ['studente', 'insegnante'] },
 		{ label: 'Studi o lavori?', name: 'activities', type: 'checkboxSchoolOrWork', required: true, roles: ['studente'] },
 		{ label: 'Posso dare ripetizioni', name: 'ripetizioni', type: 'checkboxRipetizioni', required: false, roles: ['studente'] },
@@ -52,10 +47,10 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 
 	let filteredFields;
 
-	if (type == "login" && role) {
-		filteredFields = formFieldsLogin.filter(field => field.roles.includes(role));
+	if (type == "login") {
+		filteredFields = formFields.filter(field => field.showInLogin == true);
 	} else {
-		filteredFields = formFieldsSignin.filter(field => field.roles.includes(role));
+		filteredFields = formFields.filter(field => field.roles.includes(role));
 	}
 
 	const initialFormData = filteredFields.reduce((acc, field) => {
@@ -143,6 +138,8 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 	////////////// SUBMIT //////////////
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+
+		console.log(formData);
 
 		if (!acceptedPrivacy && type !== 'login') {
 			setErrorMessage("Devi accettare l'informativa sulla privacy.");
@@ -247,125 +244,119 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 						}}
 					></CloseIcon>
 
+					<>
+						{type == "signin" && (
+							<Stepper activeStep={activeStep}>
+								{steps.map((label, index) => {
+									const stepProps = {};
+									const labelProps = {};
+									return (
+										<Step key={label} {...stepProps}>
+											<StepLabel {...labelProps}>{label}</StepLabel>
+										</Step>
+									);
+								})}
+							</Stepper>
+						)}
 
-					{type == 'signin' ?
-						(
+
+						{activeStep == 0 && type == "signin" ? (
 							<>
-								<Stepper activeStep={activeStep}>
-									{steps.map((label, index) => {
-										const stepProps = {};
-										const labelProps = {};
-										return (
-											<Step key={label} {...stepProps}>
-												<StepLabel {...labelProps}>{label}</StepLabel>
-											</Step>
-										);
-									})}
-								</Stepper>
-
-								{activeStep == 0 ? (
-									<>
-										<FormControl sx={{ minWidth: 120, margin: "40px 0px" }}>
-											<InputLabel id="selectRole">Ruolo</InputLabel>
-											<Select
-												labelId="selectRole"
-												id="selectRole"
-												value={role}
-												label="Ruolo"
-												onChange={handleChangeRole}
-											>
-												<MenuItem value={"studente"}>Studente</MenuItem>
-												<MenuItem value={"insegnante"}>Insegnante</MenuItem>
-											</Select>
-										</FormControl>
-									</>
-								) : (
-									<>
-										{filteredFields.map((field) => {
-											const isDependencyMet = !field.dependencies || field.dependencies.every(dep => (dep === 'school' ? schoolChecked : workChecked));
-
-											if (!isDependencyMet) return null;
-
-											switch (field.name) {
-												case 'activities':
-													return (
-														<FormGroup key={field.name} sx={{ border: "1px solid #c2c2c2", padding: "15px", borderRadius: "4px" }}>
-															<Typography sx={{ fontSize: "17px", marginBottom: "10px", color: "#5e5e5e" }} variant="p" component="p">{field.label}</Typography>
-															<FormControlLabel
-																control={<Checkbox checked={schoolChecked} onChange={checkboxDistanceChange} name="scuola" />}
-																label="Studio"
-															/>
-															<FormControlLabel
-																control={<Checkbox checked={workChecked} onChange={checkboxDistanceChange} name="lavoro" />}
-																label="Lavoro"
-															/>
-														</FormGroup>
-													);
-												case 'distance':
-													return (
-														<Box key={field.name} sx={{ display: 'flex', flexDirection: 'column' }}>
-															<Typography id="input-slider" gutterBottom>
-																{field.label} {distance}km
-															</Typography>
-															<Slider
-																value={distance}
-																onChange={handleSliderChange}
-																aria-labelledby="input-slider"
-																min={0}
-																max={100}
-															/>
-														</Box>
-													);
-												case 'ripetizioni':
-													return (
-														<Box key={field.name} display="flex" alignItems="center">
-															<Typography>{field.label}</Typography>
-															<Checkbox {...label} onChange={checkboxRipetizioni} checked={ripetizioni} />
-														</Box>
-													);
-												default:
-													return (
-														<TextField
-															key={field.name}
-															label={field.label}
-															name={field.name}
-															type={field.type}
-															value={formData[field.name]}
-															onChange={handleChange}
-															variant="outlined"
-															required={field.required}
-														/>
-													);
-											}
-
-
-										})}
-
-										<FormControlLabel
-											control={
-												<Checkbox
-													checked={acceptedPrivacy}
-													onChange={(e) => setAcceptedPrivacy(e.target.checked)}
-													sx={{ width: '40px' }}
-												/>
-											}
-											label={
-												<Typography>
-													Ho letto e accetto <MuiLink onClick={() => setPrivacyOpen(true)} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>l'informativa sulla privacy</MuiLink>.
-												</Typography>
-											}
-										/>
-
-									</>
-								)}
+								<FormControl sx={{ minWidth: 120, margin: "40px 0px" }}>
+									<InputLabel id="selectRole">Ruolo</InputLabel>
+									<Select
+										labelId="selectRole"
+										id="selectRole"
+										value={role}
+										label="Ruolo"
+										onChange={handleChangeRole}
+									>
+										<MenuItem value={"studente"}>Studente</MenuItem>
+										<MenuItem value={"insegnante"}>Insegnante</MenuItem>
+									</Select>
+								</FormControl>
 							</>
 						) : (
 							<>
-								<TextField fullWidth required label="Nome" />
-								<TextField fullWidth required label="Cognome" />
+								{filteredFields.map((field) => {
+									const isDependencyMet = !field.dependencies || field.dependencies.every(dep => (dep === 'school' ? schoolChecked : workChecked));
+
+									if (!isDependencyMet) return null;
+
+									switch (field.name) {
+										case 'activities':
+											return (
+												<FormGroup key={field.name} sx={{ border: "1px solid #c2c2c2", padding: "15px", borderRadius: "4px" }}>
+													<Typography sx={{ fontSize: "17px", marginBottom: "10px", color: "#5e5e5e" }} variant="p" component="p">{field.label}</Typography>
+													<FormControlLabel
+														control={<Checkbox checked={schoolChecked} onChange={checkboxDistanceChange} name="scuola" />}
+														label="Studio"
+													/>
+													<FormControlLabel
+														control={<Checkbox checked={workChecked} onChange={checkboxDistanceChange} name="lavoro" />}
+														label="Lavoro"
+													/>
+												</FormGroup>
+											);
+										case 'distance':
+											return (
+												<Box key={field.name} sx={{ display: 'flex', flexDirection: 'column' }}>
+													<Typography id="input-slider" gutterBottom>
+														{field.label} {distance}km
+													</Typography>
+													<Slider
+														value={distance}
+														onChange={handleSliderChange}
+														aria-labelledby="input-slider"
+														min={0}
+														max={100}
+													/>
+												</Box>
+											);
+										case 'ripetizioni':
+											return (
+												<Box key={field.name} display="flex" alignItems="center">
+													<Typography>{field.label}</Typography>
+													<Checkbox {...label} onChange={checkboxRipetizioni} checked={ripetizioni} />
+												</Box>
+											);
+										default:
+											return (
+												<TextField
+													key={field.name}
+													label={field.label}
+													name={field.name}
+													type={field.type}
+													value={formData[field.name]}
+													onChange={handleChange}
+													variant="outlined"
+													required={field.required}
+												/>
+											);
+									}
+
+								})}
+
+								{type == "signin" && (
+									<FormControlLabel
+										control={
+											<Checkbox
+												checked={acceptedPrivacy}
+												onChange={(e) => setAcceptedPrivacy(e.target.checked)}
+												sx={{ width: '40px' }}
+											/>
+										}
+										label={
+											<Typography>
+												Ho letto e accetto <MuiLink onClick={() => setPrivacyOpen(true)} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>l'informativa sulla privacy</MuiLink>.
+											</Typography>
+										}
+									/>
+								)}
+
 							</>
-						)
-					}
+						)}
+					</>
 
 					{
 						isLoading ? (
@@ -379,7 +370,7 @@ function LoginComponent({ type, setLoginOpen, setLoginType }) {
 								}}
 							/>
 						) : (
-							(type == 'signin' && activeStep == steps.length - 1) && (
+							(type == 'login' || activeStep == steps.length - 1) && (
 								<Button
 									variant="contained"
 									color="primary"
