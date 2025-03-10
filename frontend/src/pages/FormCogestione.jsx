@@ -6,8 +6,17 @@ import CloseIcon from '@mui/icons-material/Close';
 import backgroundCogestione from '../assets/images/sport.jpg';
 
 const classi = ["1", "2", "3", "4", "5"];
-const attivitaMattina = ["Sport", "Laboratorio", "Musica", "Ora d'aria"];
-const attivitaPomeriggio = ["Teatro", "Coding", "Pittura", "Ora d'aria"];
+const attivitaMattina = [
+    "Sport", "Laboratorio", "Musica", "Ora d'aria", "Cucina", "Cucina etnica (1€ ad assaggio)", "Make-up", 
+    "Croce Rossa", "Forze dell’ordine", "Protezione civile", "Programmazione", "Cinema/anime",
+    "Ballo", "Ludoteca", "Aula di studio", "Pittura"
+  ];
+  
+  const attivitaPomeriggio = [
+    "Sport", "Laboratorio", "Musica", "Ora d'aria", "Cucina", "Cucina etnica", "Make-up", 
+    "Croce Rossa", "Forze dell’ordine", "Protezione civile", "Programmazione", "Cinema/anime", 
+    "Ballo", "Ludoteca", "Aula di studio", "Pittura"
+  ];
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -201,7 +210,7 @@ export default function PrenotazioneCogestione() {
                                 {attivitaPomeriggio.map(a => <MenuItem key={a} value={a} disabled={a === "Ora d'aria" && oraDAriaCount >= 1}>{a}</MenuItem>)}
                             </Select>
                         </FormControl>
-                        <FormControlLabel control={<Checkbox checked={mangioScuola} onChange={() => setMangioScuola(!mangioScuola)} />} label="Mangio a scuola (1€)" />
+                        <FormControlLabel control={<Checkbox checked={mangioScuola} onChange={() => setMangioScuola(!mangioScuola)} />} label="Mangio a scuola (2€)" />
                     </>
                 )}
 
