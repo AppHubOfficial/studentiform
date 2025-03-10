@@ -201,7 +201,7 @@ export default function PrenotazioneCogestione() {
                                 {attivitaPomeriggio.map(a => <MenuItem key={a} value={a} disabled={a === "Ora d'aria" && oraDAriaCount >= 1}>{a}</MenuItem>)}
                             </Select>
                         </FormControl>
-                        <FormControlLabel control={<Checkbox checked={mangioScuola} onChange={() => setMangioScuola(!mangioScuola)} />} label="Mangio a scuola (1€)" />
+                        <FormControlLabel control={<Checkbox checked={mangioScuola} onChange={() => setMangioScuola(!mangioScuola)} />} label="Mangio a scuola (2€)" />
                     </>
                 )}
 
