@@ -6,8 +6,45 @@ import CloseIcon from '@mui/icons-material/Close';
 import backgroundCogestione from '../assets/images/sport.jpg';
 
 const classi = ["1", "2", "3", "4", "5"];
-const attivitaMattina = ["Calcio", "Basket", "Pallavolo", "Ping Pong", "Cucina", "Cucina Etnica (1€ ad assaggio)", "Make-up", "Croce Rossa", "Forze dell'Ordine", "Protezione Civile", "Programmazione", "Cinema/Anime", "Ballo", "Ludoteca", "Aula di Studio", "Pittura", "Ora d'aria"];
-const attivitaPomeriggio = ["Calcio (Non torneo)", "Basket", "Pallavolo", "Ping Pong", "Cucina Etnica (1€ ad assaggio)", "Make-up", "Croce Rossa", "Forze dell'Ordine", "Protezione Civile", "Programmazione", "Cinema/Anime", "Ballo", "Ludoteca", "Aula di Studio", "Pittura", "Ora d'aria"];
+const attivitaMattina = {
+    "Calcio": "Partita di calcio all'aperto. Le squadre verranno formate in anticipo.",
+    "Basket": "Partita di basket all'aperto con squadre organizzate prima dell'evento.",
+    "Pallavolo": "Gioco di pallavolo all'aperto con squadre predefinite.",
+    "Ping Pong": "Torneo di ping pong in aula attrezzata.",
+    "Cucina": "Affiancamento al professor Casalegno nella preparazione della pasta per gli studenti.",
+    "Cucina Etnica (1€ ad assaggio)": "Fiera gastronomica con piatti da tutto il mondo preparati da famiglie e docenti.",
+    "Make-up": "Sessione di confronto sulle tecniche di trucco tra studenti e studentesse.",
+    "Croce Rossa": "Due corsi della Croce Rossa: malattie sessualmente trasmissibili e rischi della guida irresponsabile.",
+    "Forze dell'Ordine": "Incontro informativo sulle carriere nelle forze dell'ordine.",
+    "Protezione Civile": "Dimostrazioni della Protezione Civile sui rischi della zona.",
+    "Programmazione": "Lezione su linguaggi di programmazione extra rispetto al programma ministeriale.",
+    "Cinema/Anime": "Visione di un'opera di cinema o anime con successiva riflessione critica.",
+    "Ballo": "Lezioni di ballo moderno all'aperto con vari generi musicali.",
+    "Ludoteca": "Sessione di gioco da tavolo con esperti della ludoteca di Castelnuovo Don Bosco.",
+    "Aula di Studio": "Spazio dedicato allo studio o al riposo, accessibile solo per due moduli.",
+    "Pittura": "Ritinteggiatura dell'aula LCF il 23/04/2025 e dell'aula 7 il 24/04/2025.",
+    "Ora d'aria": "Momento di relax all'aperto."
+};
+
+const attivitaPomeriggio = {
+    "Calcio (Non torneo)": "Partita di calcio amatoriale senza torneo, squadre organizzate prima.",
+    "Basket": attivitaMattina["Basket"],
+    "Pallavolo": attivitaMattina["Pallavolo"],
+    "Ping Pong": attivitaMattina["Ping Pong"],
+    "Cucina Etnica (1€ ad assaggio)": attivitaMattina["Cucina Etnica (1€ ad assaggio)"],
+    "Make-up": attivitaMattina["Make-up"],
+    "Croce Rossa": attivitaMattina["Croce Rossa"],
+    "Forze dell'Ordine": attivitaMattina["Forze dell'Ordine"],
+    "Protezione Civile": attivitaMattina["Protezione Civile"],
+    "Programmazione": attivitaMattina["Programmazione"],
+    "Cinema/Anime": attivitaMattina["Cinema/Anime"],
+    "Ballo": attivitaMattina["Ballo"],
+    "Ludoteca": attivitaMattina["Ludoteca"],
+    "Aula di Studio": attivitaMattina["Aula di Studio"],
+    "Pittura": attivitaMattina["Pittura"],
+    "Ora d'aria": attivitaMattina["Ora d'aria"]
+};
+
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
