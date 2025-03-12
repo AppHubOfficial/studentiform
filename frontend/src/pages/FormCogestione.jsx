@@ -7,7 +7,7 @@ import backgroundCogestione from '../assets/images/sport.jpg';
 
 const classi = ["1", "2", "3", "4", "5"];
 const attivitaMattina = ["Calcio", "Basket", "Pallavolo", "Ping Pong", "Cucina", "Cucina Etnica (1€ ad assaggio)", "Make-up", "Croce Rossa", "Forze dell'Ordine", "Protezione Civile", "Programmazione", "Cinema/Anime", "Ballo", "Ludoteca", "Aula di Studio", "Pittura", "Ora d'aria"];
-const attivitaPomeriggio = ["Calcio", "Basket", "Pallavolo", "Ping Pong", "Cucina Etnica (1€ ad assaggio)", "Make-up", "Croce Rossa", "Forze dell'Ordine", "Protezione Civile", "Programmazione", "Cinema/Anime", "Ballo", "Ludoteca", "Aula di Studio", "Pittura", "Ora d'aria"];
+const attivitaPomeriggio = ["Calcio (Non torneo)", "Basket", "Pallavolo", "Ping Pong", "Cucina Etnica (1€ ad assaggio)", "Make-up", "Croce Rossa", "Forze dell'Ordine", "Protezione Civile", "Programmazione", "Cinema/Anime", "Ballo", "Ludoteca", "Aula di Studio", "Pittura", "Ora d'aria"];
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
