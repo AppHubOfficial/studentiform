@@ -36,8 +36,6 @@ const styleModal = {
 export default function PrenotazioneCogestione() {
 
     const [classe, setClasse] = useState("");
-    const [nome, setNome] = useState("");
-    const [cognome, setCognome] = useState("");
     const [mangioScuola, setMangioScuola] = useState(false);
     const [oraDAriaCount, setOraDAriaCount] = useState(0);
     const [open, setOpen] = useState(false);
@@ -47,17 +45,61 @@ export default function PrenotazioneCogestione() {
     const [popoverContent, setPopoverContent] = useState("");
     const [openSelect, setOpenSelect] = useState(false);
     const [calcioDisabled, setCalcioDisabled] = useState(false);
-
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-
+    const openPopover = Boolean(anchorEl);
+    const popoverId = openPopover ? 'simple-popover' : undefined;
+    const classi = ["1", "2", "3", "4", "5"];
     const [attivita, setAttivita] = useState({
         mercoledi: ["", "", ""],
         giovedi: ["", "", ""],
         pomeriggio: ""
     });
+    const [formData, setFormData] = useState({
+        nome: "",
+        cognome: "",
+        classe: "",
+        attivita: {
+            mercoledi: ["", "", ""],
+            giovedi: ["", "", ""],
+            pomeriggio: ""
+        },
+        mangioScuola: false
+    });
 
-    const classi = ["1", "2", "3", "4", "5"];
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const handlePopoverOpen = (event, content) => {
+        event.stopPropagation();
+        setAnchorEl(event.currentTarget);
+        setPopoverContent(content);
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+        setPopoverContent("");
+    };
+
+    const handleAttivitaChange = (session, index, value) => {
+        let newAttivita = { ...attivita };
+        if (session === "mercoledi" || session === "giovedi") {
+            if (value === "Calcio") {
+                newAttivita[session] = ["Calcio", "Calcio", "Calcio"];
+            } else {
+                newAttivita[session][index] = value;
+            }
+        } else {
+            newAttivita.pomeriggio = value;
+        }
+        setAttivita(newAttivita);
+        setOraDAriaCount(
+            [...newAttivita.mercoledi, ...newAttivita.giovedi, newAttivita.pomeriggio].filter(a => a === "Ora d'aria").length
+        );
+    };
+
+    const handleChange = (e) => {
+
+    }
+
 
     ///////////////// FORM FIELDS /////////////////
     const formFields = [
@@ -98,38 +140,19 @@ export default function PrenotazioneCogestione() {
         { name: "cinema_anime", label: "Cinema/Anime", descr: "Visione di un'opera di cinema o anime con successiva riflessione critica.", ora: ["merc_mattina", "giov_mattina", "pomeriggio"] },
         { name: "ballo", label: "Ballo", descr: "Lezioni di ballo moderno all'aperto con vari generi musicali.", ora: ["merc_mattina", "giov_mattina", "pomeriggio"] },
         { name: "ludoteca", label: "Ludoteca", descr: "Sessione di gioco da tavolo con esperti della ludoteca di Castelnuovo Don Bosco.", ora: ["merc_mattina", "giov_mattina", "pomeriggio"] },
-        { name: "aula_di_studio", label: "Aula di Studio", descr: "Spazio dedicato allo studio o al riposo, accessibile solo per due moduli.", ora: ["merc_mattina", "giov_mattina", "pomeriggio"] },
+        { name: "aula_di_studio", label: "Aula di Studio", descr: "Spazio dedicato allo studio o al riposo, disponibile solo per due moduli.", ora: ["merc_mattina", "giov_mattina", "pomeriggio"] },
         { name: "pittura", label: "Pittura", descr: "Ritinteggiatura dell'aula LCF il 23/04/2025 e dell'aula 7 il 24/04/2025.", ora: ["merc_mattina", "giov_mattina", "pomeriggio"] },
         { name: "ora_d_aria", label: "Ora d'aria", descr: "Momento di relax all'aperto.", ora: ["merc_mattina", "giov_mattina", "pomeriggio"] },
-        
+
     ];
 
     //////////////////////////////////////////
 
-    const handlePopoverOpen = (event, content) => {
-        event.stopPropagation();
-        setAnchorEl(event.currentTarget);
-        setPopoverContent(content);
-    };
-
-    const handlePopoverClose = () => {
-        setAnchorEl(null);
-        setPopoverContent("");
-    };
 
 
     //////////// handleSubmit ////////////
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        const formData = {
-            nome,
-            cognome,
-            classe,
-            attivitaMattina: classe === "1" || classe === "2" ? attivita.mercoledi.concat(attivita.giovedi) : attivita.mercoledi,
-            attivitaPomeriggio: attivita.pomeriggio,
-            mangioScuola,
-        };
 
         console.log("Dati inviati:", formData);
         setErrorMessage("");
@@ -160,28 +183,9 @@ export default function PrenotazioneCogestione() {
             setIsLoading(false);
         }
     };
-
     ////////////////////////////////////
 
-    const handleAttivitaChange = (session, index, value) => {
-        let newAttivita = { ...attivita };
-        if (session === "mercoledi" || session === "giovedi") {
-            if (value === "Calcio") {
-                newAttivita[session] = ["Calcio", "Calcio", "Calcio"];
-            } else {
-                newAttivita[session][index] = value;
-            }
-        } else {
-            newAttivita.pomeriggio = value;
-        }
-        setAttivita(newAttivita);
-        setOraDAriaCount(
-            [...newAttivita.mercoledi, ...newAttivita.giovedi, newAttivita.pomeriggio].filter(a => a === "Ora d'aria").length
-        );
-    };
-
-    const openPopover = Boolean(anchorEl);
-    const popoverId = openPopover ? 'simple-popover' : undefined;
+    
 
     return (
         <Box
@@ -228,7 +232,7 @@ export default function PrenotazioneCogestione() {
                     color: '#3e3e3e'
                 }}
             >
-                <Typography variant="h5" align="center" sx={{ fontWeight: "bold" }}>
+                <Typography variant="h5" align="center" sx={{ fontWeight: "bold", marginTop: "-20px", marginBottom: "30px" }}>
                     Prenotazione COGESTIONE
                 </Typography>
 
@@ -242,7 +246,7 @@ export default function PrenotazioneCogestione() {
                                         <FormControl fullWidth margin="normal" key={field.name}>
                                             <InputLabel>{field.label}</InputLabel>
                                             <Select
-                                                value={classe}
+                                                value={formData.classe}
                                                 onChange={(e) => setClasse(e.target.value)}
                                                 label="Classe"
                                                 required
@@ -267,6 +271,7 @@ export default function PrenotazioneCogestione() {
                                                     labelId={`act-${index}`}
                                                     id={`act-${index}`}
                                                     label={field.label}
+                                                    value={formData[field.name] || ""}
                                                     onChange={handleAttivitaChange}
                                                     onOpen={() => setOpenSelect(true)}
                                                     onClose={() => setOpenSelect(false)}
@@ -282,7 +287,7 @@ export default function PrenotazioneCogestione() {
                                                                 <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
                                                                     <span>{selectField.label}</span>
                                                                     {openSelect && (
-                                                                        <IconButton size="small" onClick={(e) => e.stopPropagation()}>
+                                                                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); handlePopoverOpen(e, selectField.descr); }}>
                                                                             <ArrowDropDownIcon fontSize="small" />
                                                                         </IconButton>
                                                                     )}
@@ -312,18 +317,15 @@ export default function PrenotazioneCogestione() {
 
                                 default:
                                     return (
-                                        <>
-                                            <TextField
-                                                key={field.name}
-                                                label={field.label}
-                                                name={field.name}
-                                                type={field.type}
-                                                //value={formData[field.name]}
-                                                //onChange={handleChange}
-                                                variant="outlined"
-                                                required={field.required}
-                                            />
-                                        </>
+                                        <TextField
+                                            value={formData.nome}
+                                            onChange={handleChange}
+                                            label={field.label}
+                                            variant="outlined"
+                                            fullWidth
+                                            required
+                                            margin="normal"
+                                        />
 
                                     );
                             }
