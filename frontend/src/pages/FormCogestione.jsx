@@ -118,7 +118,7 @@ export default function PrenotazioneCogestione() {
         { label: 'Modulo 3', modulo: "giov3", name: 'giov_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
 
         { label: `${["3", "4", "5"].includes(classe) ? "Govedì" : "Mercoledì"} pomeriggio`, type: 'label', classi: [1, 2, 3, 4, 5] },
-        { label: 'Modulo Pomeriggio', name: 'pomeriggio', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
+        { label: 'Modulo Pomeriggio', modulo: "pome", name: 'pomeriggio', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
 
         { label: 'Mangio a scuola (1€)', name: 'mangio_scuola', type: 'checkbox', required: false, classi: [1, 2, 3, 4, 5] },
     ];
