@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     TextField,
     MenuItem,
@@ -35,71 +35,41 @@ const styleModal = {
 
 export default function PrenotazioneCogestione() {
 
-    const [classe, setClasse] = useState("");
-    const [mangioScuola, setMangioScuola] = useState(false);
-    const [oraDAriaCount, setOraDAriaCount] = useState(0);
+    const [disableOraDAria, setDisableOraDAria] = useState(false);
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [anchorEl, setAnchorEl] = useState(null);
     const [popoverContent, setPopoverContent] = useState("");
     const [openSelect, setOpenSelect] = useState(false);
-    const [calcioDisabled, setCalcioDisabled] = useState(false);
     const openPopover = Boolean(anchorEl);
     const popoverId = openPopover ? 'simple-popover' : undefined;
     const classi = ["1", "2", "3", "4", "5"];
-    const [attivita, setAttivita] = useState({
-        mercoledi: ["", "", ""],
-        giovedi: ["", "", ""],
-        pomeriggio: ""
-    });
+
+
     const [formData, setFormData] = useState({
+        classe: "",
         nome: "",
         cognome: "",
-        classe: "",
-        attivita: {
-            mercoledi: ["", "", ""],
-            giovedi: ["", "", ""],
-            pomeriggio: ""
-        },
-        mangioScuola: false
+        m1: "",
+        m2: "",
+        m3: "",
+        g1: "",
+        g2: "",
+        g3: "",
+        pomeriggio: "",
+        mangioScuola: false,
     });
 
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-
-    const handlePopoverOpen = (event, content) => {
-        event.stopPropagation();
-        setAnchorEl(event.currentTarget);
-        setPopoverContent(content);
-    };
-
-    const handlePopoverClose = () => {
-        setAnchorEl(null);
-        setPopoverContent("");
-    };
-
-    const handleAttivitaChange = (session, index, value) => {
-        let newAttivita = { ...attivita };
-        if (session === "mercoledi" || session === "giovedi") {
-            if (value === "Calcio") {
-                newAttivita[session] = ["Calcio", "Calcio", "Calcio"];
-            } else {
-                newAttivita[session][index] = value;
-            }
-        } else {
-            newAttivita.pomeriggio = value;
-        }
-        setAttivita(newAttivita);
-        setOraDAriaCount(
-            [...newAttivita.mercoledi, ...newAttivita.giovedi, newAttivita.pomeriggio].filter(a => a === "Ora d'aria").length
-        );
-    };
-
-    const handleChange = (e) => {
-
-    }
-
+    const [disabledFields, setDisabledFields] = useState({
+        m1Disabled: false,
+        m2Disabled: false,
+        m3Disabled: false,
+        g1Disabled: false,
+        g2Disabled: false,
+        g3Disabled: false,
+        pomeriggioDisabled: false,
+    });
 
     ///////////////// FORM FIELDS /////////////////
     const formFields = [
@@ -108,20 +78,21 @@ export default function PrenotazioneCogestione() {
         { label: 'Classe', name: 'classe', type: 'selectClasse', required: true, classi: [1, 2, 3, 4, 5] },
 
         { label: 'Mercoledì mattina', type: 'label', classi: [1, 2, 3, 4, 5] },
-        { label: 'Modulo 1', modulo: "merc1", name: 'merc_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
-        { label: 'Modulo 2', modulo: "merc2",name: 'merc_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
-        { label: 'Modulo 3', modulo: "merc3",name: 'merc_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
+        { label: 'Modulo 1', name: 'm1', ora: 'merc_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
+        { label: 'Modulo 2', name: 'm2', ora: 'merc_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
+        { label: 'Modulo 3', name: 'm3', ora: 'merc_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
 
         { label: 'Giovedì mattina', type: 'label', classi: [1, 2, 3, 4, 5] },
-        { label: 'Modulo 1', modulo: "giov1", name: 'giov_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
-        { label: 'Modulo 2', modulo: "giov2", name: 'giov_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
-        { label: 'Modulo 3', modulo: "giov3", name: 'giov_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
+        { label: 'Modulo 1', name: 'g1', ora: 'giov_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
+        { label: 'Modulo 2', name: 'g2', ora: 'giov_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
+        { label: 'Modulo 3', name: 'g3', ora: 'giov_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
 
-        { label: `${["3", "4", "5"].includes(classe) ? "Govedì" : "Mercoledì"} pomeriggio`, type: 'label', classi: [1, 2, 3, 4, 5] },
-        { label: 'Modulo Pomeriggio', modulo: "pome", name: 'pomeriggio', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
+        { label: `${["3", "4", "5"].includes(formData.classe) ? "Giovedì" : "Mercoledì"} pomeriggio`, type: 'label', classi: [1, 2, 3, 4, 5] },
+        { label: 'Modulo Pomeriggio', name: 'pomeriggio', ora: 'pomeriggio', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },
 
         { label: 'Mangio a scuola (1€)', name: 'mangio_scuola', type: 'checkbox', required: false, classi: [1, 2, 3, 4, 5] },
     ];
+
 
 
     const selectFields = [
@@ -147,6 +118,106 @@ export default function PrenotazioneCogestione() {
     ];
 
     //////////////////////////////////////////
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const handlePopoverOpen = (event, content) => {
+        event.stopPropagation();
+        setAnchorEl(event.currentTarget);
+        setPopoverContent(content);
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+        setPopoverContent("");
+    };
+
+    const handleChange = (e) => {
+        const { name, type, checked, value } = e.target;
+
+        if (type === "checkbox") {
+            setFormData((prev) => ({
+                ...prev,
+                [name]: checked,
+            }));
+            return;
+        }
+
+        if (value === "Calcio (tutta la mattina)") {
+            if (["m1", "m2", "m3"].includes(name)) {
+                setFormData((prev) => ({
+                    ...prev,
+                    m1: "Calcio (tutta la mattina)",
+                    m2: "Calcio (tutta la mattina)",
+                    m3: "Calcio (tutta la mattina)",
+                }));
+                setDisabledFields((prev) => ({
+                    ...prev,
+                    m2Disabled: true,
+                    m3Disabled: true
+                }))
+                return;
+            } else if (["g1", "g2", "g3"].includes(name)) {
+                setFormData((prev) => ({
+                    ...prev,
+                    g1: "Calcio (tutta la mattina)",
+                    g2: "Calcio (tutta la mattina)",
+                    g3: "Calcio (tutta la mattina)",
+                }));
+                setDisabledFields((prev) => ({
+                    ...prev,
+                    g2Disabled: true,
+                    g3Disabled: true
+                }))
+                return;
+            }
+        } else {
+
+            if ((disabledFields.m2Disabled == true) && name.startsWith("m")) {
+                setDisabledFields((prev) => ({
+                    ...prev,
+                    m2Disabled: false,
+                    m3Disabled: false,
+                }))
+                setFormData((prev) => ({
+                    ...prev,
+                    m2: "",
+                    m3: "",
+                }))
+            }
+
+
+            if (disabledFields.g2Disabled == true && name.startsWith("g")) {
+                setDisabledFields((prev) => ({
+                    ...prev,
+                    g2Disabled: false,
+                    g3Disabled: false,
+                }))
+                setFormData((prev) => ({
+                    ...prev,
+                    g2: "",
+                    g3: "",
+                }))
+            }
+
+        }
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+
+    };
+
+    useEffect(() => {
+        setDisableOraDAria(Object.values(formData).includes("Ora d'aria"));
+        console.log(formData);
+    }, [formData]);
+
+    useEffect(() => {
+        console.log(disableOraDAria);
+    }, [disableOraDAria]);
 
 
 
@@ -185,19 +256,21 @@ export default function PrenotazioneCogestione() {
     };
     ////////////////////////////////////
 
-    
+
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                backgroundImage: `url(${backgroundCogestione})`,
-                height: '45vh',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-            }}
-        >
+        <>
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    backgroundImage: `url(${backgroundCogestione})`,
+                    height: '45vh',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                }}
+            />
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -221,15 +294,14 @@ export default function PrenotazioneCogestione() {
                 sx={{
                     maxWidth: 400,
                     mx: "auto",
-                    mt: 15,
-                    mb: 15,
+                    mt: '-380px',
+                    mb: 10,
                     p: 3,
                     boxShadow: '0px 7px 14px rgba(0, 0, 0, 0.1)',
                     padding: '65px 30px 30px 30px',
                     backgroundColor: 'white',
-                    marginBottom: '20px',
-                    marginTop: "50px !important",
-                    color: '#3e3e3e'
+                    color: '#3e3e3e',
+                    borderRadius: '8px'
                 }}
             >
                 <Typography variant="h5" align="center" sx={{ fontWeight: "bold", marginTop: "-20px", marginBottom: "30px" }}>
@@ -238,16 +310,18 @@ export default function PrenotazioneCogestione() {
 
                 <Box component="form" onSubmit={handleSubmit}>
                     {formFields
-                        .filter((field) => classe ? field.classi.includes(Number(classe)) : true)// filtro in base alla classe. Se è ancora undefined mostro tutto
+                        .filter((field) => formData.classe ? field.classi.includes(Number(formData.classe)) : true)
                         .map((field, index) => {
+
                             switch (field.type) {
                                 case 'selectClasse':
                                     return (
-                                        <FormControl fullWidth margin="normal" key={field.name}>
+                                        <FormControl fullWidth margin="normal" key={`field.name_${index}`}>
                                             <InputLabel>{field.label}</InputLabel>
                                             <Select
                                                 value={formData.classe}
-                                                onChange={(e) => setClasse(e.target.value)}
+                                                name="classe"
+                                                onChange={handleChange}
                                                 label="Classe"
                                                 required
                                             >
@@ -260,57 +334,58 @@ export default function PrenotazioneCogestione() {
                                         </FormControl>
                                     );
 
-                                case 'selectAttivita': // Filtro in base al name
+                                case 'selectAttivita':
                                     return (
-                                        <>
+                                        <FormControl fullWidth margin="normal" key={`formcontrol-${index}`}>
 
-                                            <FormControl fullWidth margin="normal" key={index}>
+                                            <InputLabel id={`act-${index}`}>{field.label}</InputLabel>
+                                            <Select
+                                                labelId={`act-${index}`}
+                                                key={`${field.name}_${field.label}`}
+                                                name={field.name}
+                                                id={`act-${index}`}
+                                                label={field.label}
+                                                value={formData[field.name] || ""}
+                                                onChange={handleChange}
+                                                onOpen={() => setOpenSelect(true)}
+                                                onClose={() => setOpenSelect(false)}
+                                                disabled={disabledFields[field.name + "Disabled"]}
 
-                                                <InputLabel id={`act-${index}`}>{field.label}</InputLabel>
-                                                <Select
-                                                    labelId={`act-${index}`}
-                                                    id={`act-${index}`}
-                                                    label={field.label}
-                                                    value={formData[field.name] || ""}
-                                                    onChange={handleAttivitaChange}
-                                                    onOpen={() => setOpenSelect(true)}
-                                                    onClose={() => setOpenSelect(false)}
-                                                >
-                                                    {selectFields
-                                                        .filter((sel) => sel.ora.includes(field.name))
-                                                        .map((selectField, i) => (
-                                                            <MenuItem
-                                                                key={`${selectField.name}_${i}`}
-                                                                value={selectField.label}
-                                                                disabled={selectField.label === "Ora d'aria" && oraDAriaCount >= 1}
-                                                            >
-                                                                <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
-                                                                    <span>{selectField.label}</span>
-                                                                    {openSelect && (
-                                                                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); handlePopoverOpen(e, selectField.descr); }}>
-                                                                            <ArrowDropDownIcon fontSize="small" />
-                                                                        </IconButton>
-                                                                    )}
-                                                                </Box>
-                                                            </MenuItem>
-                                                        ))}
-                                                </Select>
+                                            >
+                                                {selectFields
+                                                    .filter((sel) => sel.ora.includes(field.ora))
+                                                    .map((selectField, i) => (
+                                                        <MenuItem
+                                                            key={`${field.name}_${selectField.label}`}
+                                                            value={selectField.label}
+                                                            disabled={selectField.label === "Ora d'aria" && disableOraDAria}
+                                                        >
+                                                            <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
+                                                                <span>{selectField.label}</span>
+                                                                {openSelect && (
+                                                                    <IconButton size="small" onClick={(e) => { e.stopPropagation(); handlePopoverOpen(e, selectField.descr); }}>
+                                                                        <ArrowDropDownIcon fontSize="small" />
+                                                                    </IconButton>
+                                                                )}
+                                                            </Box>
+                                                        </MenuItem>
+                                                    ))}
+                                            </Select>
 
-                                            </FormControl>
-
-                                        </>
+                                        </FormControl>
                                     );
 
 
                                 case 'label':
                                     return (
-                                        <InputLabel>{field.label}</InputLabel>
+                                        <InputLabel key={`label-${index}`}>{field.label}</InputLabel>
                                     );
 
                                 case 'checkbox':
                                     return (
                                         <FormControlLabel
-                                            control={<Checkbox checked={mangioScuola} onChange={() => setMangioScuola(!mangioScuola)} />}
+                                            key={`checkbox-${index}`}
+                                            control={<Checkbox checked={formData.mangioScuola} name="mangioScuola" onChange={handleChange} />}
                                             label="Mangio a scuola (2€)"
                                         />
                                     );
@@ -318,9 +393,11 @@ export default function PrenotazioneCogestione() {
                                 default:
                                     return (
                                         <TextField
-                                            value={formData.nome}
+                                            key={`input-${index}`}
+                                            value={formData[field.name] || ""}
                                             onChange={handleChange}
                                             label={field.label}
+                                            name={field.name}
                                             variant="outlined"
                                             fullWidth
                                             required
@@ -356,6 +433,9 @@ export default function PrenotazioneCogestione() {
                     <Typography sx={{ p: 2 }}>{popoverContent}</Typography>
                 </Popover>
             </Box>
-        </Box>
+
+
+        </>
+
     );
 }

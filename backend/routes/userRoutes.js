@@ -21,6 +21,7 @@ router.post('/create-user', async (req, res) => {
   }
 
   const nome = fields.nome.value;
+  const cognome = fields.cognome.value;
   const email = fields.email.value;
   const password = fields.password.value.toString();
   const tel = fields.tel.value;
@@ -31,8 +32,8 @@ router.post('/create-user', async (req, res) => {
   const work = fields.work?.value;
   const note = fields.note?.value;
   const ripetizioni = fields.ripetizioni?.value;
+  const role = req.body.role;
 
-  console.log(ripetizioni)
 
   try {
     const saltRounds = 10;
@@ -43,9 +44,10 @@ router.post('/create-user', async (req, res) => {
       .insert([
         {
           nome,
+          cognome,
           email,
           password: hashedPassword,
-          type,
+          role,
           tel,
           university,
           faculty,
@@ -54,7 +56,6 @@ router.post('/create-user', async (req, res) => {
           work,
           note,
           ripetizioni,
-          created_at: new Date()
         }
       ]);
 
@@ -66,7 +67,7 @@ router.post('/create-user', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { email: email, type: type }, // il payload
+      { email: email, role: role }, // il payload
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
@@ -85,7 +86,7 @@ router.post('/create-user', async (req, res) => {
       maxAge: 1000 * 60 * 60 * 24,
     });
 
-    res.cookie('type', type, {
+    res.cookie('role', role, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
@@ -102,7 +103,7 @@ router.post('/create-user', async (req, res) => {
 ///////////////// LOGIN /////////////////
 router.post('/login', async (req, res) => {
   console.log(req.body);
-  const { email, password, type } = req.body;
+  const { email, password, role } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
@@ -111,7 +112,7 @@ router.post('/login', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('users')
-      .select('password, type')
+      .select('password, role')
       .eq('email', email.value);
 
     if (error) {
@@ -129,7 +130,7 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { email: email.value, type: data[0].type }, // il payload
+      { email: email.value, role: data[0].role }, // il payload
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
@@ -148,7 +149,7 @@ router.post('/login', async (req, res) => {
       maxAge: 1000 * 60 * 60 * 24,
     });
 
-    res.cookie('type', type, {
+    res.cookie('role', role, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
@@ -169,7 +170,7 @@ router.post('/logout', (req, res) => {
   try {
     res.clearCookie('authToken');
     res.clearCookie('email');
-    res.clearCookie('type');
+    res.clearCookie('role');
 
     return res.status(200).json({ message: 'Logged out successfully' });
   } catch (err) {
@@ -198,7 +199,7 @@ router.post('/getProfileData', async (req, res) => {
 
     const { data, error } = await supabase
       .from('users')
-      .select('id, nome, email, tel, type, university, faculty, activities, distance, work, ripetizioni, note, created_at')
+      .select('id, nome, cognome, email, tel, role, university, faculty, activities, distance, work, ripetizioni, note, created_at')
       .eq('email', email);
 
     if (error) {
@@ -227,20 +228,20 @@ router.post('/getUsersData', async (req, res) => {
     const decodedData = jwt.verify(token, process.env.JWT_SECRET);
 
     const email = decodedData.email;
-    const type = decodedData.type;
+    const role = decodedData.role;
 
 
     if (!email) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    if (type !== "insegnante") {
+    if (role !== "insegnante") {
       return res.status(401).json({ error: 'Not authorized' });
     }
 
     const { data, error } = await supabase
       .from('users')
-      .select('nome, email, tel, type, university, faculty, activities, distance, work, note, ripetizioni, created_at');
+      .select('nome, cognome, email, tel, role, university, faculty, activities, distance, work, note, ripetizioni, created_at');
 
     if (error) {
       console.error('Errore nel recupero dei dati:', error);
@@ -273,11 +274,11 @@ router.post('/editProfileData', async (req, res) => {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    const { nome, tel, type, university, faculty, activities, distance, note, work, ripetizioni } = req.body;
+    const { nome, cognome, tel, role, university, faculty, activities, distance, note, work, ripetizioni } = req.body;
 
     const { data, error } = await supabase
       .from('users')
-      .update({ nome, tel, type, university, faculty, activities, distance, note, work, ripetizioni })
+      .update({ nome, cognome, tel, role, university, faculty, activities, distance, note, work, ripetizioni })
       .eq('email', email);
 
     if (error) {
@@ -297,9 +298,10 @@ router.post('/editProfileData', async (req, res) => {
 ///////////////// SAVE DATA COGESTIONE /////////////////
 router.post('/save_data_cogestione', async (req, res) => {
   console.log(req.body);
-  const { nome, cognome, classe, attivitaMattina, attivitaPomeriggio, mangioScuola } = req.body;
-  try {
 
+  const { nome, cognome, classe, m1, m2, m3, g1, g2, g3, pomeriggio, mangioScuola } = req.body;
+
+  try {
     const { data, error } = await supabase
       .from('cogestione')
       .insert([
@@ -307,18 +309,26 @@ router.post('/save_data_cogestione', async (req, res) => {
           nome,
           cognome,
           classe,
-          attivita_mattina: attivitaMattina,
-          attivita_pomeriggio: attivitaPomeriggio,
+          attivita_mattina_merc: [m1, m2, m3],
+          attivita_mattina_giov: [g1, g2, g3],
+          attivita_pomeriggio: pomeriggio,
           mangio_scuola: mangioScuola,
         }
       ]);
 
-      res.status(200).json(data);
+    if (error) {
+      console.error("Errore Supabase:", error.message);
+      return res.status(500).json({ error: "Errore invio form cogestione" });
+    }
+
+    res.status(200).json(data);
 
   } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
+    console.error("Errore del server:", err);
+    res.status(500).json({ error: "Errore del server" });
   }
 });
+
 
 
 module.exports = router;
