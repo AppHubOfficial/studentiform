@@ -331,4 +331,23 @@ router.post('/save_data_cogestione', async (req, res) => {
 
 
 
+///////////////// GET DATA COGESTIONE /////////////////
+router.get('/get_data_cogestione', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('cogestione')
+      .select('*'); // Se vuoi filtrare i dati, aggiungi .eq('colonna', valore)
+
+    if (error) {
+      console.error("Errore Supabase:", error.message);
+      return res.status(500).json({ error: "Errore nel recupero dei dati" });
+    }
+
+    res.status(200).json(data);
+  } catch (err) {
+    console.error("Errore del server:", err);
+    res.status(500).json({ error: "Errore del server" });
+  }
+});
+
 module.exports = router;
