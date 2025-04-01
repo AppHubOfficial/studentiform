@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Box, Alert, CircularProgress} from '@mui/material';
+import { Button, Box, Alert, CircularProgress, Grid, Typography, Slider, FormControl, MenuItem, InputLabel, Select, TextField, InputAdornment, IconButton } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import MenuIcon from '@mui/icons-material/Menu';
+
+import SearchIcon from '@mui/icons-material/Search';
 
 import SearchComponent from '../components/SearchComponent';
 import TableDataComponent from '../components/TableDataComponent';
@@ -30,6 +31,42 @@ function ManageUsers() {
     const [errorTimeout, setErrorTimeout] = useState(false);
     const TIMEOUT = 6000;
 
+    const columnsTable = [
+        { field: 'nome', headerName: 'Nome', width: 130 },
+        { field: 'cognome', headerName: 'Cognome', width: 130 },
+        { field: 'email', headerName: 'Email', width: 230 },
+        { field: 'tel', headerName: 'Telefono', width: 130 },
+        { field: 'role', headerName: 'Ruolo', width: 130 },
+        { field: 'university', headerName: 'Università', width: 130 },
+        { field: 'distance', headerName: 'Distanza', width: 130 },
+        { field: 'activities', headerName: 'Attività', width: 130 },
+        { field: 'work', headerName: 'Luogo di lavoro', width: 150 },
+        { field: 'faculty', headerName: 'Facoltà', width: 130 },
+        { field: 'ripetizioni', headerName: 'Ripetizioni', width: 130 },
+        { field: 'note', headerName: 'Note', width: 150 },
+        {
+            field: 'created_at',
+            headerName: 'Creato il giorno',
+            width: 160,
+            valueGetter: (value) => {
+                if (!value) {
+                    return value;
+                }
+                return formatDate(value);
+            },
+        },
+    ];
+
+    function formatDate(dateString) {
+        const regex = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/;
+        const match = dateString.match(regex);
+
+        if (!match) return null;
+
+        const [, year, month, day, hour, minute] = match;
+        return `${day}/${month}/${year}, ${hour}:${minute}`;
+    };
+
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -53,8 +90,8 @@ function ManageUsers() {
     }, []);
 
     useEffect(() => {
-        if (!profileData) return;
-        
+        if (!profileData || profileData[0]?.role !== "insegnante") return;
+
         const fetchAllData = async () => {
             try {
                 const data = await fetchData('getUsersData');
@@ -88,7 +125,7 @@ function ManageUsers() {
 
     useEffect(() => {
         let filteredUsersData = tempUsersData || [];
-    
+
         if (textSearchInput.trim().toLowerCase() !== "") {
             filteredUsersData = filteredUsersData.filter(user => {
                 return (
@@ -98,21 +135,21 @@ function ManageUsers() {
                 );
             });
         }
-    
+
         if (selectedRole && selectedRole !== "all") {
             filteredUsersData = filteredUsersData.filter(user => {
                 return user.role.includes(selectedRole);
             });
         }
-    
+
         if (valueDistance) {
             filteredUsersData = filteredUsersData.filter(user => {
                 return user.distance >= valueDistance[0] && user.distance <= valueDistance[1];
             });
         }
-    
+
         setUsersData(filteredUsersData);
-    
+
     }, [selectedRole, textSearchInput, valueDistance, tempUsersData]);
 
     if (loading) {
@@ -142,13 +179,64 @@ function ManageUsers() {
             <DashboardLayout>
                 {profileData && profileData[0].role === "insegnante" && (
                     <Box>
-                        <SearchComponent
-                            handleChangeRoles={handleChangeRoles}
-                            handleSearchInput={handleSearchInput}
-                            handleChangeDistance={handleChangeDistance}
-                            valueDistance={valueDistance}
-                        />
-                        <TableDataComponent usersData={usersData} />
+                        <SearchComponent>
+
+                            <>
+
+                                <TextField
+                                    style={{ maxWidth: '450px', marginBottom: '50px' }}
+                                    fullWidth
+                                    label="Cerca"
+                                    variant="outlined"
+                                    onChange={handleSearchInput}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton>
+                                                    <SearchIcon />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+
+                                <Grid container spacing={3} style={{ marginLeft: '0px' }}>
+
+                                    <Grid item xs={12} sm={6} style={{ maxWidth: '230px' }}>
+                                        <Typography variant="body1">Cerca per distanza</Typography>
+                                        <Slider
+                                            value={valueDistance}
+                                            onChange={(e, newValue) => handleChangeDistance(newValue)}
+                                            valueLabelDisplay="auto"
+                                            min={0}
+                                            max={100}
+                                            disableSwap
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6}>
+                                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                                            <InputLabel id="demo-simple-select-standard-label">Ruolo</InputLabel>
+                                            <Select
+                                                labelId="demo-simple-select-standard-label"
+                                                id="demo-simple-select-standard"
+                                                onChange={handleChangeRoles}
+                                                label="Ruolo"
+                                            >
+                                                <MenuItem value="all">Tutti</MenuItem>
+                                                <MenuItem value="insegnante">Insegnante</MenuItem>
+                                                <MenuItem value="studente">Studente</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
+                            </>
+
+
+
+                        </SearchComponent>
+
+                        <TableDataComponent tableData={usersData} columns={columnsTable} rowIdField="email"/>
                     </Box>
                 )}
             </DashboardLayout>

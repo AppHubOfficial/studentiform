@@ -69,8 +69,8 @@ const DashboardLayout = ({ children }) => {
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <IconButton onClick={toggleDrawer(true)} sx={{ alignSelf: 'start', m: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
+            <IconButton onClick={toggleDrawer(true)} sx={{ alignSelf: 'start', m: 2, zIndex: '2' }}>
                 <MenuIcon />
             </IconButton>
 

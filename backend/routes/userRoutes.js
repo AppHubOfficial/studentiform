@@ -296,7 +296,7 @@ router.post('/editProfileData', async (req, res) => {
 
 
 ///////////////// SAVE DATA COGESTIONE /////////////////
-router.post('/save_data_cogestione', async (req, res) => {
+router.post('/saveDataCogestione', async (req, res) => {
   console.log(req.body);
 
   const { nome, cognome, classe, m1, m2, m3, g1, g2, g3, pomeriggio, mangioScuola } = req.body;
@@ -332,11 +332,11 @@ router.post('/save_data_cogestione', async (req, res) => {
 
 
 ///////////////// GET DATA COGESTIONE /////////////////
-router.get('/get_data_cogestione', async (req, res) => {
+router.post('/getDataCogestione', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('cogestione')
-      .select('*'); // Se vuoi filtrare i dati, aggiungi .eq('colonna', valore)
+      .select('*');
 
     if (error) {
       console.error("Errore Supabase:", error.message);
