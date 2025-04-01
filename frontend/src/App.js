@@ -9,6 +9,7 @@ import Impostazioni from './pages/Impostazioni.jsx';
 import PrivacyPolicyDialog from './pages/PrivacyPolicyDialog.jsx';
 import FormCogestione from './pages/FormCogestione.jsx';
 import ManageUsers from './pages/ManageUsers.jsx';
+import ManageEvents from './pages/ManageEvents.jsx';
 
 const router = createBrowserRouter([
     {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
     {
         path: "/manage-users",
         element: <ManageUsers />,
+    },
+    {
+        path: "/manage-events",
+        element: <ManageEvents />,
     },
     {
         path: "*",

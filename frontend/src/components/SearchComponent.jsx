@@ -8,7 +8,7 @@ function SearchComponent({ handleChangeRoles, handleSearchInput, handleChangeDis
 
     return (
         <>
-            <Box className="searchContainer" sx={{ padding: 3 }}>
+            <Box className="searchContainer" sx={{ padding: 3, backgroundColor: "white", borderRadius: "6px", marginBottom: "5px" }}>
                 <Typography style={{ marginBottom: '50px' }} variant="h5" component="h1" gutterBottom>
                     Ricerca
                 </Typography>

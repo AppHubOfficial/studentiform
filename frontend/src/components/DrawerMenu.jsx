@@ -9,8 +9,6 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 const DrawerMenu = ({ open, toggleDrawer, handleLogout, listMenu }) => {
     const navigate = useNavigate();
 
-    
-
     const DrawerList = (
         <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
             <List>

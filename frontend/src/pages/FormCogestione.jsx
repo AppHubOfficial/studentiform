@@ -44,8 +44,14 @@ export default function PrenotazioneCogestione() {
     const [openSelect, setOpenSelect] = useState(false);
     const openPopover = Boolean(anchorEl);
     const popoverId = openPopover ? 'simple-popover' : undefined;
-    const classi = ["1", "2", "3", "4", "5"];
 
+    const classi = [
+        "1AE", "1AI", "1AM", "1AS", "1BI", "1BMT",
+        "2AET", "2AI", "2AM", "2AS",
+        "3AET", "3AI", "3AM", "3AS", "3BI",
+        "4AE", "4AI", "4AM", "4AS",
+        "5AEM", "5AI", "5AS"
+    ];
 
     const [formData, setFormData] = useState({
         classe: "",
@@ -76,7 +82,6 @@ export default function PrenotazioneCogestione() {
         { label: 'Nome', name: 'nome', type: 'input', required: true, classi: [1, 2, 3, 4, 5] },
         { label: 'Cognome', name: 'cognome', type: 'input', required: true, classi: [1, 2, 3, 4, 5] },
         { label: 'Classe *', name: 'classe', type: 'selectClasse', required: true, classi: [1, 2, 3, 4, 5] },
-        { label: 'Sezione', name: 'sezione', type: 'input', required: true, classi: [1, 2, 3, 4, 5] },
 
         { label: 'Mercoledì mattina', type: 'label', classi: [1, 2, 3, 4, 5] },
         { label: 'Modulo 1', name: 'm1', ora: 'merc_mattina', type: 'selectAttivita', required: true, classi: [1, 2, 3, 4, 5] },

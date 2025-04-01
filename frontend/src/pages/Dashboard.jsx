@@ -4,7 +4,8 @@ import { Box, Typography, Divider, CircularProgress, Alert } from '@mui/material
 
 import DashboardLayout from '../components/DashboardLayout';
 import HomeEvents from '../components/HomeEvents';
-import getUserData from '../scripts/getUserData';
+
+import fetchData from '../scripts/fetchData';
 
 function Dashboard() {
     const navigate = useNavigate();
@@ -13,9 +14,9 @@ function Dashboard() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchUserData = async () => {
             try {
-                const data = await getUserData();
+                const data = await fetchData('getProfileData');
                 if (!data) {
                     navigate('/');
                 } else {
@@ -28,7 +29,7 @@ function Dashboard() {
             }
         };
 
-        fetchData();
+        fetchUserData();
     }, []);
 
 

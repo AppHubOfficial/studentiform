@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Box, IconButton, Alert } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import DrawerMenu from '../components/DrawerMenu';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import { useNavigate } from 'react-router-dom';
+import EventIcon from '@mui/icons-material/Event';
 
-import DrawerMenu from '../components/DrawerMenu';
-
+import fetchData from '../scripts/fetchData';
 
 const DashboardLayout = ({ children }) => {
     const [open, setOpen] = useState(false);
@@ -18,10 +20,32 @@ const DashboardLayout = ({ children }) => {
     const apiUrl = process.env.REACT_APP_API_URL;
 
     const listMenu = [
-        { text: 'Home', icon: <HomeIcon />, path: '/dashboard' },
-        { text: 'Profilo', icon: <PersonIcon />, path: '/profilo' },
-        { text: 'Gestione utenti', icon: <PeopleAltIcon />, path: '/manage-users' },
-    ]
+        { text: 'Home', icon: <HomeIcon />, path: '/dashboard', role: ["studente", "insegnante"] },
+        { text: 'Profilo', icon: <PersonIcon />, path: '/profilo', role: ["studente", "insegnante"] },
+        { text: 'Gestione utenti', icon: <PeopleAltIcon />, path: '/manage-users', role: ["insegnante"] },
+        { text: 'Eventi', icon: <EventIcon />, path: '/manage-events', role: ["insegnante"] },
+    ];
+
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            try {
+                const data = await fetchData('getProfileData');
+                if (!data || data.length === 0) {
+                    navigate('/');
+                } else {
+                    setProfileData(data[0]);
+                }
+            } catch (err) {
+                setError('Errore nel caricamento dei dati utente.');
+            }
+        };
+
+        fetchProfileData();
+    }, []);
+
+    const filteredListMenu = listMenu.filter((l) => 
+        profileData && l.role.includes(profileData.role)
+    );
 
     const handleLogout = async () => {
         try {
@@ -50,12 +74,12 @@ const DashboardLayout = ({ children }) => {
                 <MenuIcon />
             </IconButton>
 
-            <DrawerMenu open={open} toggleDrawer={toggleDrawer} handleLogout={handleLogout} listMenu={listMenu} />
+            <DrawerMenu open={open} toggleDrawer={toggleDrawer} handleLogout={handleLogout} listMenu={filteredListMenu} />
 
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+                {error && <Alert severity="error">{error}</Alert>}
                 {children}
             </Box>
-
         </Box>
     );
 };

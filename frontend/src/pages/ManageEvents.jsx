@@ -142,12 +142,6 @@ function ManageUsers() {
             <DashboardLayout>
                 {profileData && profileData[0].role === "insegnante" && (
                     <Box>
-                        <SearchComponent
-                            handleChangeRoles={handleChangeRoles}
-                            handleSearchInput={handleSearchInput}
-                            handleChangeDistance={handleChangeDistance}
-                            valueDistance={valueDistance}
-                        />
                         <TableDataComponent usersData={usersData} />
                     </Box>
                 )}
