@@ -99,10 +99,11 @@ function Profilo() {
             if (response.ok) {
                 //const data = await response.json();
                 //setProfileData(data);
+                setErrorMessage("");
                 setOpenPopup(true)
 
             } else {
-                setErrorMessage("Errore durante aggiornamento profilo")
+                setErrorMessage("Errore durante aggiornamento profilo");
                 setErrorTimeout(true)
                 console.error(`Errore nell'aggiornamento del profilo: ${response.status}`);
             }
