@@ -302,33 +302,23 @@ router.post('/saveDataCogestione', async (req, res) => {
   const { nome, cognome, classe, m1, m2, m3, g1, g2, g3, pomeriggio, mangioScuola } = req.body;
 
   try {
-    // Chiamata alla route getUsersData per ottenere tutti gli utenti
-    const response = await fetchData('/getUsersData'); // Assicurati che questa funzione esista e che la route sia corretta
-    const existingUsers = response.data; // Assuming fetchData returns the user data as an array of objects
-
-    // Controlla se l'utente è già presente
-    const isUserExist = existingUsers.some(user => user.nome === nome && user.cognome === cognome);
-    
-    if (isUserExist) {
-      return res.status(400).json({ error: "Utente già presente nella cogestione" });
-    }
-
-    // Se l'utente non esiste, procedi con l'inserimento
     const { data, error } = await supabase
       .from('cogestione')
-      .insert([{
-        nome,
-        cognome,
-        classe,
-        m1,
-        m2,
-        m3,
-        g1,
-        g2,
-        g3,
-        attivita_pomeriggio: pomeriggio,
-        mangio_scuola: mangioScuola,
-      }]);
+      .insert([
+        {
+          nome,
+          cognome,
+          classe,
+          m1,
+          m2,
+          m3,
+          g1,
+          g2,
+          g3,
+          attivita_pomeriggio: pomeriggio,
+          mangio_scuola: mangioScuola,
+        }
+      ]);
 
     if (error) {
       console.error("Errore Supabase:", error.message);
@@ -342,7 +332,6 @@ router.post('/saveDataCogestione', async (req, res) => {
     res.status(500).json({ error: "Errore del server" });
   }
 });
-
 
 
 
