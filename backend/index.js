@@ -5,10 +5,6 @@ const jwt = require('jsonwebtoken');
 const userRoutes = require('./routes/userRoutes');
 
 require('dotenv').config();
-console.log(process.env);
-
-console.log('Supabase URL:', process.env.SUPABASE_URL);
-console.log('Supabase Key:', process.env.SUPABASE_KEY);
 
 const app = express();
 
