@@ -299,7 +299,7 @@ router.post('/editProfileData', async (req, res) => {
 router.post('/saveDataCogestione', async (req, res) => {
   console.log(req.body);
 
-  const { nome, cognome, classe, m1, m2, m3, g1, g2, g3, pomeriggio, mangioScuola } = req.body;
+  const { nome, cognome, classe, m1, m2, m3, g1, g2, g3, pomeriggio, mangioScuola, cucinaEtnica } = req.body;
 
   try {
     const { data, error } = await supabase
@@ -316,7 +316,8 @@ router.post('/saveDataCogestione', async (req, res) => {
           g2,
           g3,
           attivita_pomeriggio: pomeriggio,
-          mangio_scuola: mangioScuola,
+          mangioScuola: mangioScuola,
+          cucinaEtnica: cucinaEtnica,
         }
       ]);
 
