@@ -86,17 +86,17 @@ export default function PrenotazioneCogestione() {
         { label: 'Classe *', name: 'classe', type: 'selectClasse', required: true },
 
         { label: 'Mercoledì mattina', type: 'label' },
-        { label: 'Modulo 1', name: 'm1', ora: 'merc_mattina', type: 'selectAttivita', required: true },
-        { label: 'Modulo 2', name: 'm2', ora: 'merc_mattina', type: 'selectAttivita', required: true },
-        { label: 'Modulo 3', name: 'm3', ora: 'merc_mattina', type: 'selectAttivita', required: true },
+        { label: 'Modulo 1 | 8:10 - 9:52', name: 'm1', ora: 'merc_mattina', type: 'selectAttivita', required: true },
+        { label: 'Modulo 2 | 10:02 - 11:40', name: 'm2', ora: 'merc_mattina', type: 'selectAttivita', required: true },
+        { label: 'Modulo 3 | 11:50 - 13:34', name: 'm3', ora: 'merc_mattina', type: 'selectAttivita', required: true },
 
         { label: 'Giovedì mattina', type: 'label' },
-        { label: 'Modulo 1', name: 'g1', ora: 'giov_mattina', type: 'selectAttivita', required: true },
-        { label: 'Modulo 2', name: 'g2', ora: 'giov_mattina', type: 'selectAttivita', required: true },
-        { label: 'Modulo 3', name: 'g3', ora: 'giov_mattina', type: 'selectAttivita', required: true },
+        { label: 'Modulo 1 | 8:10 - 9:52', name: 'g1', ora: 'giov_mattina', type: 'selectAttivita', required: true },
+        { label: 'Modulo 2 | 10:02 - 11:40', name: 'g2', ora: 'giov_mattina', type: 'selectAttivita', required: true },
+        { label: 'Modulo 3 | 11:50 - 13:34', name: 'g3', ora: 'giov_mattina', type: 'selectAttivita', required: true },
 
         { label: `${["3", "4", "5"].includes(formData.classe.charAt(0)) ? "Giovedì" : "Mercoledì"} pomeriggio`, type: 'label' },
-        { label: 'Modulo Pomeriggio', name: 'pomeriggio', ora: 'pomeriggio', type: 'selectAttivita', required: true },
+        { label: 'Modulo Pomeriggio | 14:04 - 15:52', name: 'pomeriggio', ora: 'pomeriggio', type: 'selectAttivita', required: true },
 
         { label: 'Mangio a scuola (1€)', name: 'mangio_scuola', type: 'checkbox', required: false },
     ];
