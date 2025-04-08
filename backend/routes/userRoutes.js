@@ -303,7 +303,7 @@ router.post('/saveDataCogestione', async (req, res) => {
     // Verifica se l'utente esiste già nel database
     const { data: existingUser, error: userError } = await supabase
       .from('cogestione')
-      .select('id') // Puoi selezionare un campo unico come 'id' per verificare l'esistenza dell'utente
+      .select('id') 
       .eq('nome', nome)
       .eq('cognome', cognome)
       .eq('classe', classe)
