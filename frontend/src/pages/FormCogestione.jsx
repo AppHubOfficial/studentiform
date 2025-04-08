@@ -128,7 +128,7 @@ export default function PrenotazioneCogestione() {
         { name: "ballo", label: "Ballo", descr: "Lezioni di ballo moderno all'aperto con vari generi musicali.", ora: ["m1", "m2", "m3", "g1", "g2", "g3", "pomeriggio"] },
         { name: "ludoteca", label: "Ludoteca", descr: "Sessione di gioco da tavolo con esperti della ludoteca di Castelnuovo Don Bosco.", ora: ["m1", "m2", "m3", "g1", "g2", "g3", "pomeriggio"] },
         { name: "aula_di_studio", label: "Aula di Studio", descr: "Spazio dedicato allo studio o al riposo, disponibile solo per due moduli.", ora: ["m1", "m2", "m3", "g1", "g2", "g3", "pomeriggio"] },
-        { name: "pittura", label: "Pittura", descr: "Ritinteggiatura dell'aula LCF il 23/04/2025 e dell'aula 7 il 24/04/2025.", ora: ["m1", "m2", "m3", "g1", "g2", "g3", "pomeriggio"] },
+        { name: "pittura", label: "Pittura", descr: "Ritinteggiatura dell'aula LCF il 23/04/2025 e dell'aula 7 il 24/04/2025 con il professor Fasoglio.", ora: ["m1", "m2", "m3", "g1", "g2", "g3", "pomeriggio"] },
         { name: "ora_d_aria", label: "Ora d'aria", descr: "Momento di relax all'aperto.", ora: ["m1", "m2", "m3", "g1", "g2", "g3", "pomeriggio"] },
     ];
 
@@ -269,41 +269,55 @@ export default function PrenotazioneCogestione() {
     //////////// handleSubmit ////////////
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         console.log("Dati inviati:", formData);
         setErrorMessage("");
         setOpen(true);
         setIsLoading(true);
-
-
-        // const cogestioneExData = await fetchData('getDataCogestione');
-        // if (!cogestioneExData) {
-        //     setErrorMessage("Impossibile ottenere i dati utente.");
-        //     setIsLoading(false);
-        //     return;
-        // }
-
+    
+        // Verifica se l'utente è già registrato
+        const userCheckResponse = await fetch(`${apiUrl}/api/users/checkUser`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(formData),
+        });
+    
+        const userExists = await userCheckResponse.json();
+        if (userExists) {
+            setIsLoading(false);
+            setErrorMessage('Utente già registrato con questi dati.');
+            return;
+        }
+    
+        // Se l'utente non è registrato, prosegui con la logica esistente
+    
+        const cogestioneExData = await fetchData('getDataCogestione');
+        if (!cogestioneExData) {
+            setErrorMessage("Impossibile ottenere i dati utente.");
+            setIsLoading(false);
+            return;
+        }
+    
         if (formData.mangioScuola === "" || formData.mangioScuola === undefined) {
             setIsLoading(false);
             setErrorMessage('Campo Mangio scuola non compilato');
             return;
         }
-
-
+    
         const moduli = ['m1', 'm2', 'm3', 'g1', 'g2', 'g3', 'pomeriggio'];
-
+    
         const countStudio = moduli.reduce((acc, key) => {
             if (formData[key] === 'Aula di Studio') acc += 1;
             return acc;
         }, 0);
-
-
+    
         if (!formData.classe.startsWith("5") && countStudio > 1) {
             setIsLoading(false);
             setErrorMessage('Non puoi selezionare Aula studio più di una volta');
             return;
         }
-
+    
         try {
             const response = await fetch(`${apiUrl}/api/users/saveDataCogestione`, {
                 method: 'POST',
@@ -311,11 +325,12 @@ export default function PrenotazioneCogestione() {
                 credentials: 'include',
                 body: JSON.stringify(formData),
             });
-
+    
             const data = await response.json();
-
+    
             if (response.ok) {
                 setIsLoading(false);
+                setErrorMessage("Dati inviati con successo");
             } else {
                 console.log(data.error);
                 setErrorMessage(data.error || 'Problema di rete');
@@ -327,6 +342,7 @@ export default function PrenotazioneCogestione() {
             setIsLoading(false);
         }
     };
+    
     ////////////////////////////////////
 
 
