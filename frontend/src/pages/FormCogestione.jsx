@@ -448,7 +448,8 @@ export default function PrenotazioneCogestione() {
                                                             value={selectField.label}
                                                             disabled={
                                                                 (selectField.label === "Ora d'aria" && disableOraDAria) ||
-                                                                (!formData.classe.startsWith("5") && selectField.label === "Aula di Studio" && disableStudio)
+                                                                (!formData.classe.startsWith("5") && selectField.name === "aula_di_studio" && disableStudio) ||
+                                                                ((formData.classe.startsWith("1") || formData.classe.startsWith("2")) &&  selectField.name === "cucina")
                                                             }
                                                         >
                                                             <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
