@@ -300,7 +300,6 @@ router.post('/saveDataCogestione', async (req, res) => {
   const { nome, cognome, classe, m1, m2, m3, g1, g2, g3, pomeriggio, mangioScuola, cucinaEtnica } = req.body;
 
   try {
-    // Verifica se l'utente esiste già nel database
     const { data: existingUser, error: userError } = await supabase
       .from('cogestione')
       .select('id') 
@@ -318,7 +317,6 @@ router.post('/saveDataCogestione', async (req, res) => {
       return res.status(409).json({ error: "L'utente è già registrato con questi dati" });
     }
 
-    // Se l'utente non esiste, procedi con l'inserimento dei dati
     const { data, error } = await supabase
       .from('cogestione')
       .insert([{
@@ -372,38 +370,6 @@ router.post('/getDataCogestione', async (req, res) => {
   }
 });
 
-
-///////////////// CHECK USER /////////////////
-router.post('/checkUser', async (req, res) => {
-  const { nome, cognome, classe, mangioScuola } = req.body;
-
-  try {
-    // Verifica se l'utente esiste già nel database
-    const { data: existingUser, error: userError } = await supabase
-      .from('cogestione')
-      .select('id') // Puoi selezionare un campo unico come 'id' per verificare l'esistenza dell'utente
-      .eq('nome', nome)
-      .eq('cognome', cognome)
-      .eq('classe', classe)
-      .eq('mangioScuola', mangioScuola);
-
-    if (userError) {
-      console.error("Errore nella verifica dell'utente:", userError.message);
-      return res.status(500).json({ error: "Errore durante la verifica dell'utente" });
-    }
-
-    if (existingUser.length > 0) {
-      return res.status(409).json({ error: "L'utente è già registrato con questi dati" });
-    }
-
-    // Se l'utente non esiste, rispondi con un messaggio di successo
-    res.status(200).json({ message: "Utente non trovato, pronto per la registrazione" });
-
-  } catch (err) {
-    console.error("Errore del server:", err);
-    res.status(500).json({ error: "Errore del server" });
-  }
-});
 
 
 module.exports = router;
