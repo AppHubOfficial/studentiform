@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Box, Alert, CircularProgress, TextField, InputAdornment, IconButton, Grid, InputLabel, Select, MenuItem } from '@mui/material';
+import { Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
+
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 
 import SearchComponent from '../components/SearchComponent';
 import TableDataComponent from '../components/TableDataComponent';
+import TableCorsi from '../components/TableCorsi';
 import DrawerMenu from '../components/DrawerMenu';
 import DashboardLayout from '../components/DashboardLayout';
 
@@ -26,6 +29,8 @@ function ManageUsers() {
     const [profileData, setProfileData] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    
     const classi = [
         "Tutte",
         "1AE", "1AI", "1AM", "1AS", "1BI", "1BMT",
@@ -35,10 +40,41 @@ function ManageUsers() {
         "5AEM", "5AI", "5AS"
     ];
 
+
+    const corsi = [
+        "Tutte",
+        "Assente (tutta la mattina)",
+        "Assente",
+        "Calcio (tutta la mattina)",
+        "Calcio (Non torneo)",
+        "Basket",
+        "Pallavolo",
+        "Ping Pong",
+        "Cucina con Casalegno",
+        "Make-up",
+        "Croce Rossa",
+        "Forze dell'Ordine",
+        "Protezione Civile",
+        "Programmazione",
+        "Cinema",
+        "Anime",
+        "Ballo",
+        "Ludoteca",
+        "Aula di Studio",
+        "Pittura",
+        "Ora d'aria"
+    ];
+
     const [classeSel, setClasseSel] = useState('');
     const handleChange = (e) => {
         const { value } = e.target;
         setClasseSel(value);
+    };
+
+    const [corsoSel, setCorsoSel] = useState('');
+    const handleChangeCorso = (e) => {
+        const { value } = e.target;
+        setCorsoSel(value);
     };
 
     const handleSearchInput = (event) => {
@@ -216,12 +252,32 @@ function ManageUsers() {
                                     ))}
                                 </Select>
                             </Grid>
+
                         </SearchComponent>
                         <TableDataComponent tableData={cogestioneData} columns={columnsTable} rowIdField="id" />
+
+                        <TableCorsi tableData={cogestioneData} columns={[]} rowIdField="id"></TableCorsi>
+
+                        {corsi.slice(1).map((corso, index) => {
+                            const filteredByCorso = (cogestioneData || []).filter(user =>
+                                [user.m1, user.m2, user.m3, user.g1, user.g2, user.g3, user.attivita_pomeriggio]
+                                    .some(modulo => modulo === corso)
+                            );
+                            if (filteredByCorso.length === 0) return null;
+                            return (
+                                <Box key={index} mt={4}>
+                                    <h2 style={{ marginTop: '70px' }}>{corso}</h2>
+                                    <TableDataComponent tableData={filteredByCorso} columns={columnsTable} corsi={corsi} rowIdField="id" />
+                                </Box>
+                            );
+                        })}
                     </Box>
                 )}
-            </DashboardLayout>
 
+               
+
+
+            </DashboardLayout>
 
         </Box>
     );
